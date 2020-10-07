@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="24e8f421-6fe3-4b31-a9d5-882abe709f5c" name="Default Changelist" comment="" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ExecutionTargetManager" SELECTED_TARGET="FullHD_5_pollici_API_28" />
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Dart File" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProjectId" id="1iYMWv2p14kPF9IdFkXwFc8wVlI" />
+  <component name="ProjectViewState">
+    <option name="showExcludedFiles" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="dart.analysis.tool.window.force.activate" value="false" />
+    <property name="io.flutter.reload.alreadyRun" value="true" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="show.migrate.to.gradle.popup" value="false" />
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="24e8f421-6fe3-4b31-a9d5-882abe709f5c" name="Default Changelist" comment="" />
+      <created>1602080106724</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1602080106724</updated>
+    </task>
+    <servers />
+  </component>
+  <component name="WindowStateProjectService">
+    <state width="1398" height="203" key="GridCell.Tab.0.bottom" timestamp="1602084334234">
+      <screen x="0" y="23" width="1440" height="795" />
+    </state>
+    <state width="1398" height="203" key="GridCell.Tab.0.bottom/0.23.1440.795/1679.-1057.1920.1057/-241.-1057.1920.1057@0.23.1440.795" timestamp="1602084334234" />
+    <state width="1398" height="203" key="GridCell.Tab.0.center" timestamp="1602084334233">
+      <screen x="0" y="23" width="1440" height="795" />
+    </state>
+    <state width="1398" height="203" key="GridCell.Tab.0.center/0.23.1440.795/1679.-1057.1920.1057/-241.-1057.1920.1057@0.23.1440.795" timestamp="1602084334233" />
+    <state width="1398" height="203" key="GridCell.Tab.0.left" timestamp="1602084334233">
+      <screen x="0" y="23" width="1440" height="795" />
+    </state>
+    <state width="1398" height="203" key="GridCell.Tab.0.left/0.23.1440.795/1679.-1057.1920.1057/-241.-1057.1920.1057@0.23.1440.795" timestamp="1602084334233" />
+    <state width="1398" height="203" key="GridCell.Tab.0.right" timestamp="1602084334233">
+      <screen x="0" y="23" width="1440" height="795" />
+    </state>
+    <state width="1398" height="203" key="GridCell.Tab.0.right/0.23.1440.795/1679.-1057.1920.1057/-241.-1057.1920.1057@0.23.1440.795" timestamp="1602084334233" />
+    <state x="372" y="177" width="695" height="486" key="find.popup" timestamp="1602081785343">
+      <screen x="0" y="23" width="1440" height="795" />
+    </state>
+    <state x="372" y="177" width="695" height="486" key="find.popup/0.23.1440.795/1679.-1057.1920.1057/-241.-1057.1920.1057@0.23.1440.795" timestamp="1602081785343" />
+  </component>
+</project>
