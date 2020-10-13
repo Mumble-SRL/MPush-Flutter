@@ -14,9 +14,44 @@ class MPush {
   static String get _endpoint => 'app.mpush.cloud';
   static String apiToken;
 
-  static Function(String) onToken;
-  static Function(Map<String, dynamic>) onNotificationArrival;
-  static Function(Map<String, dynamic>) onNotificationTap;
+//region onToken
+  static Function(String) _onToken;
+
+  static set onToken(Function(String) value) {
+    _initializeMethodCall();
+    _onToken = value;
+  }
+
+  static Function(String) get onToken => _onToken;
+//endregion
+
+// region onNotificationArrival
+  static Function(Map<String, dynamic>) _onNotificationArrival;
+
+  static set onNotificationArrival(Function(Map<String, dynamic>) value) {
+    _initializeMethodCall();
+    _onNotificationArrival = value;
+  }
+
+  static Function(Map<String, dynamic>) get onNotificationArrival =>
+      _onNotificationArrival;
+//endregion
+
+//region onNotificationTap
+  static Function(Map<String, dynamic>) _onNotificationTap;
+
+  static set onNotificationTap(Function(Map<String, dynamic>) value) {
+    _initializeMethodCall();
+    _onNotificationTap = value;
+  }
+
+  static Function(Map<String, dynamic>) get onNotificationTap =>
+      _onNotificationTap;
+//endregion
+
+  static Future<Map<String, dynamic>> launchNotification() async {
+    return _channel.invokeMethod('launchNotification');
+  }
 
 //region APIs
   static Future<void> registerDevice(String token) async {
@@ -49,7 +84,7 @@ class MPush {
     Map<String, String> apiParameters = {};
     apiParameters.addAll(await _defaultParameters());
     List<Map<String, dynamic>> topicsDictionaries =
-    topics.map((t) => t.toApiDictionary()).toList();
+        topics.map((t) => t.toApiDictionary()).toList();
     apiParameters['topics'] = json.encode(topicsDictionaries);
     print(apiParameters);
     String apiName = 'api/register';
@@ -183,16 +218,29 @@ class MPush {
 
   /// Requests the token to APNS & GCM
   static Future<void> requestToken() async {
-    await _initializeMethodCall();
     await _channel.invokeMethod('requestToken');
   }
 
 //region method call handler
   static Future<dynamic> _mPushHandler(MethodCall methodCall) async {
+    print(methodCall.method);
+    print(methodCall.arguments);
     switch (methodCall.method) {
       case 'onToken':
         if (methodCall.arguments is String && onToken != null) {
           onToken(methodCall.arguments);
+        }
+        break;
+      case 'pushArrived':
+        if (methodCall.arguments is Map<String, dynamic> &&
+            onNotificationArrival != null) {
+          onNotificationArrival(methodCall.arguments);
+        }
+        break;
+      case 'pushTapped':
+        if (methodCall.arguments is Map<String, dynamic> &&
+            onNotificationTap != null) {
+          onNotificationTap(methodCall.arguments);
         }
         break;
       default:
@@ -203,6 +251,7 @@ class MPush {
 
   /// If method call has been initialized or not
   static bool _methodCallInitialized = false;
+
   /// Called when setting onToken or onPushNotificationTap to initialize the callbacks
   static Future<void> _initializeMethodCall() async {
     if (!_methodCallInitialized) {
@@ -210,5 +259,4 @@ class MPush {
       _channel.setMethodCallHandler(_mPushHandler);
     }
   }
-
 }

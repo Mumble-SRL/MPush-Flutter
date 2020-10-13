@@ -11,10 +11,6 @@ import io.flutter.plugin.common.PluginRegistry.Registrar
 
 /** MpushPlugin */
 public class MpushPlugin: FlutterPlugin, MethodCallHandler {
-  /// The MethodChannel that will the communication between Flutter and native Android
-  ///
-  /// This local reference serves to register the plugin with the Flutter Engine and unregister it
-  /// when the Flutter Engine is detached from the Activity
   private lateinit var channel : MethodChannel
 
   override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
@@ -22,15 +18,6 @@ public class MpushPlugin: FlutterPlugin, MethodCallHandler {
     channel.setMethodCallHandler(this);
   }
 
-  // This static function is optional and equivalent to onAttachedToEngine. It supports the old
-  // pre-Flutter-1.12 Android projects. You are encouraged to continue supporting
-  // plugin registration via this function while apps migrate to use the new Android APIs
-  // post-flutter-1.12 via https://flutter.dev/go/android-project-migration.
-  //
-  // It is encouraged to share logic between onAttachedToEngine and registerWith to keep
-  // them functionally equivalent. Only one of onAttachedToEngine or registerWith will be called
-  // depending on the user's project. onAttachedToEngine or registerWith must both be defined
-  // in the same class.
   companion object {
     @JvmStatic
     fun registerWith(registrar: Registrar) {
@@ -40,11 +27,18 @@ public class MpushPlugin: FlutterPlugin, MethodCallHandler {
   }
 
   override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: Result) {
-    if (call.method == "getPlatformVersion") {
-      result.success("Android ${android.os.Build.VERSION.RELEASE}")
+    if (call.method == "requestToken") {
+      //TODO: request the token and call onToken to return it
+    } else if (call.method == "launchNotification") {
+      //TODO: return the launch notification map if present
     } else {
       result.notImplemented()
     }
+
+    /// TODO: when notification arrives the plugin should show it (even downloading the image) and call
+    /// the channel method pushArrived
+
+    // TODO: when a push is tapped the plugin should call pushTapped
   }
 
   override fun onDetachedFromEngine(@NonNull binding: FlutterPlugin.FlutterPluginBinding) {

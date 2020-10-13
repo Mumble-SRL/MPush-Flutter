@@ -1,8 +1,10 @@
 import Flutter
 import UIKit
+import UserNotifications
 
 public class SwiftMpushPlugin: NSObject, FlutterPlugin {
     private static var staticChannel: FlutterMethodChannel?
+    private var launchNotification: [String: Any]?
     
     public static func register(with registrar: FlutterPluginRegistrar) {
         let channel = FlutterMethodChannel(name: "mpush", binaryMessenger: registrar.messenger())
@@ -14,11 +16,13 @@ public class SwiftMpushPlugin: NSObject, FlutterPlugin {
     
     public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
         if call.method == "requestToken" {
-            self.requestToken()
+            self.requestToken(result)
+        } else if call.method == "launchNotification" {
+            result(launchNotification)
         }
     }
     
-    func requestToken() {
+    func requestToken(_ result: @escaping FlutterResult) {
         if #available(iOS 10.0, *) {
             UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge]) { (granted, _) in
                 guard granted else { return }
@@ -26,12 +30,24 @@ public class SwiftMpushPlugin: NSObject, FlutterPlugin {
                     guard settings.authorizationStatus == .authorized else { return }
                     DispatchQueue.main.async {
                         UIApplication.shared.registerForRemoteNotifications()
+                        result(true)
                     }
                 }
             }
         } else {
-            // Fallback on earlier versions
+            result(FlutterError(code: "Unavailable for iOS < 10.0",
+                                message: "Unavailable for iOS < 10.0",
+                                details: nil))
         }
+    }
+    
+    //MARK: - Application delegate
+    
+    public func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [AnyHashable : Any] = [:]) -> Bool {
+        if let userInfo = launchOptions[UIApplication.LaunchOptionsKey.remoteNotification] as? [String: AnyHashable] {
+            launchNotification = userInfo
+        }
+        return true
     }
     
     public func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
@@ -43,5 +59,25 @@ public class SwiftMpushPlugin: NSObject, FlutterPlugin {
             let token = deviceTokenParts.joined()
             channel.invokeMethod("onToken", arguments: token, result: {(r:Any?) -> () in })
         }
+    }
+    
+    //MARK: - Usern Notification Center Delegate
+    
+    @available(iOS 10.0, *)
+    public func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
+        if let channel = SwiftMpushPlugin.staticChannel,
+           let userInfo = notification.request.content.userInfo as? [String: AnyHashable] {
+            channel.invokeMethod("pushArrived", arguments: userInfo)
+        }
+        completionHandler(.alert)
+    }
+
+    @available(iOS 10.0, *)
+    public func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
+        if let channel = SwiftMpushPlugin.staticChannel,
+           let userInfo = response.notification.request.content.userInfo as? [String: AnyHashable] {
+            channel.invokeMethod("pushTapped", arguments: userInfo)
+        }
+        completionHandler()
     }
 }

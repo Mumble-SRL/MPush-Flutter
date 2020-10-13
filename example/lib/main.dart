@@ -3,8 +3,6 @@ import 'package:mpush/mp_topic.dart';
 import 'package:mpush/mpush.dart';
 
 void main() {
-  MPush.apiToken = "YOUR_TOKEN";
-
   runApp(MyApp());
 }
 
@@ -20,11 +18,17 @@ class _MyAppState extends State<MyApp> {
     super.initState();
   }
 
-  _setupMPush() {
+  _setupMPush() async {
+    MPush.apiToken = '5WcAhfzt1QTE2N7aGvcGehFFjooZd2SyByys8vAf';
     MPush.onToken = (token) async {
       print("Token received $token");
-      await MPush.registerDevice(token).catchError((error) {});
-      await MPush.registerToTopic(MPTopic(code: 'Test'));
+      await MPush.registerDevice(token).catchError(
+        (error) => print(error),
+      );
+      await MPush.registerToTopic(MPTopic(code: 'Topic')).catchError(
+        (error) => print(error),
+      );
+      print('Registered');
     };
     MPush.onNotificationArrival = (notification) {
       print("Notification arrived: $notification");
@@ -34,6 +38,9 @@ class _MyAppState extends State<MyApp> {
     };
 
     MPush.requestToken();
+
+    Map<String, dynamic> launchNotification = await MPush.launchNotification();
+    print(launchNotification);
   }
 
   @override
