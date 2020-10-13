@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Context
 import androidx.annotation.NonNull
 import com.google.android.gms.tasks.OnCompleteListener
+import com.google.firebase.FirebaseApp
 import com.google.firebase.messaging.FirebaseMessaging
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.embedding.engine.plugins.activity.ActivityAware
@@ -15,6 +16,7 @@ import io.flutter.plugin.common.MethodChannel.Result
 import io.flutter.plugin.common.PluginRegistry.Registrar
 
 /** MpushPlugin */
+
 class MpushPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
 
     private lateinit var channel: MethodChannel
@@ -22,6 +24,7 @@ class MpushPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
     private var applicationContext: Context? = null
 
     override fun onAttachedToEngine(@NonNull binding: FlutterPlugin.FlutterPluginBinding) {
+        FirebaseApp.initializeApp(binding.applicationContext)
         channel = MethodChannel(binding.flutterEngine.dartExecutor, "mpush")
         channel.setMethodCallHandler(this)
     }
@@ -51,6 +54,7 @@ class MpushPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
         fun registerWith(registrar: Registrar) {
             val plugin = MpushPlugin()
             val channel = MethodChannel(registrar.messenger(), "mpush")
+            FirebaseApp.initializeApp(registrar.activeContext())
             channel.setMethodCallHandler(plugin)
         }
     }
