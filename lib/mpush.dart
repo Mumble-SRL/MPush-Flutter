@@ -9,30 +9,41 @@ import 'package:http/http.dart' as http;
 import 'package:mpush/mp_topic.dart';
 import 'package:mpush/mpush_exception.dart';
 
+/// The MPush plugin, used to interact with MPush
 class MPush {
   static const MethodChannel _channel = const MethodChannel('mpush');
 
+  /// Mpush endpoint
   static String get _endpoint => 'app.mpush.cloud';
+
+  /// The api token of the MPush project
   static String apiToken;
 
 //region onToken
   static Function(String) _onToken;
 
+  /// Callback called when a token is retrieved from APNS or FCM
   static set onToken(Function(String) value) {
     _initializeMethodCall();
     _onToken = value;
   }
 
+  /// Callback called when a token is retrieved from APNS or FCM
   static Function(String) get onToken => _onToken;
 //endregion
 
   static Function(Map<String, dynamic>) _onNotificationArrival;
   static Function(Map<String, dynamic>) _onNotificationTap;
 
+  /// The notification that launched the app, if present, otherwise `null`.
   static Future<Map<String, dynamic>> launchNotification() async {
     return _channel.invokeMethod('launchNotification');
   }
 
+  /// Configures the MPush plugin with the callbacks.
+  ///
+  /// @param onNotificationArrival: called when a push notification arrives.
+  /// @param onNotificationTap: called when a push notification is tapped.
   static Future<void> configure({
     @required Function(Map<String, dynamic>) onNotificationArrival,
     @required Function(Map<String, dynamic>) onNotificationTap,
@@ -44,6 +55,11 @@ class MPush {
   }
 
 //region APIs
+
+  /// Register a device token.
+  ///
+  /// @param token: the token for this device, typically coming from the onToken` callback`.
+  /// @returns A future that completes once the registration is successful.
   static Future<void> registerDevice(String token) async {
     Map<String, String> apiParameters = {};
     apiParameters.addAll(await _defaultParameters());
@@ -66,10 +82,18 @@ class MPush {
     _checkResponse(response.body);
   }
 
+  /// Register the current device to a topic.
+  ///
+  /// @param topic The topic you will register to.
+  /// @returns A future that completes once the registration is successful.
   static Future<void> registerToTopic(MPTopic topic) async {
     return registerToTopics([topic]);
   }
 
+  /// Register the current device to an array of topics.
+  ///
+  /// @param topics The array of topics you will register to.
+  /// @returns A future that completes once the registration is successful.
   static Future<void> registerToTopics(List<MPTopic> topics) async {
     Map<String, String> apiParameters = {};
     apiParameters.addAll(await _defaultParameters());
@@ -93,10 +117,18 @@ class MPush {
     _checkResponse(response.body);
   }
 
+  /// Unregister the current device from a topic, the topic is matched using the code of the topic.
+  ///
+  /// @param topics The topic you will unregister from.
+  /// @returns A future that completes once the registration is successful.
   static Future<void> unregisterFromTopic(String topic) async {
     return unregisterFromTopics([topic]);
   }
 
+  /// Unregister the current device from an array of topics, the topics are matched using the code of the topic.
+  ///
+  /// @param topics The array of topics you will unregister from.
+  /// @returns A future that completes once the registration is successful.
   static Future<void> unregisterFromTopics(List<String> topics) async {
     Map<String, String> apiParameters = {};
     apiParameters.addAll(await _defaultParameters());
@@ -119,6 +151,9 @@ class MPush {
     _checkResponse(response.body);
   }
 
+  /// Unregister the current device from all topics it is registred to.
+  ///
+  /// @returns A future that completes once the registration is successful.
   static Future<void> unregisterFromAllTopics() async {
     Map<String, String> apiParameters = await _defaultParameters();
 
@@ -206,7 +241,12 @@ class MPush {
   }
 //endregion
 
-  /// Requests the token to APNS & GCM
+  /// Requests the token to APNS & GCM.
+  ///
+  /// This will not return the token, use the onToken callback to
+  /// retrieve the token once the registration is completed with success.
+  ///
+  /// @returns A future that completes once the registration is started successfully.
   static Future<void> requestToken() async {
     await _channel.invokeMethod('requestToken');
   }

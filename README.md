@@ -227,7 +227,7 @@ MPush.onToken = (token) async {
 The topic are instances of the `MPTopic` class which has 3 properties:
 
 - `code`: the id of the topic
-- *[Optional]* `title`: the readable title of the topic that will be displayed in the dashboard, if this is not setted it will be equal to `code`.
+- *[Optional]* `title`: the readable title of the topic that will be displayed in the dashboard, if this is not set it will be equal to `code`.
 - *[Optional]* `single`: if this topic represents a single device or a group of devices, by default `false`.
 
 
