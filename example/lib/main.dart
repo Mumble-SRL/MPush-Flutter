@@ -30,6 +30,7 @@ class _MyAppState extends State<MyApp> {
       );
       print('Registered');
     };
+
     /*MPush.configure(
       onNotificationArrival: (notification) {
         print("Notification arrived: $notification");
