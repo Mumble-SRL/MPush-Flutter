@@ -1,4 +1,4 @@
-package com.mumble.mpush_example
+package com.mumble.pushtest
 
 import io.flutter.embedding.android.FlutterActivity
 
