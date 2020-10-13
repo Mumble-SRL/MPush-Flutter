@@ -197,6 +197,7 @@ The topic are instances of the `MPTopic` class which has 3 properties:
 - *[Optional]* `title`: the readable title of the topic that will be displayed in the dashboard, if this is not setted it will be equal to `code`.
 - *[Optional]* `single`: if this topic represents a single device or a group of devices, by default `false`.
 
+
 ## Launch notification
 
 If the application was launched from a notification you can retrieve the data of the notification like this, this will be `null` if the application was launched normally:
