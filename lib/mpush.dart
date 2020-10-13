@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 
 import 'package:device_info/device_info.dart';
 import 'package:flutter/services.dart';
@@ -25,32 +26,21 @@ class MPush {
   static Function(String) get onToken => _onToken;
 //endregion
 
-// region onNotificationArrival
   static Function(Map<String, dynamic>) _onNotificationArrival;
-
-  static set onNotificationArrival(Function(Map<String, dynamic>) value) {
-    _initializeMethodCall();
-    _onNotificationArrival = value;
-  }
-
-  static Function(Map<String, dynamic>) get onNotificationArrival =>
-      _onNotificationArrival;
-//endregion
-
-//region onNotificationTap
   static Function(Map<String, dynamic>) _onNotificationTap;
-
-  static set onNotificationTap(Function(Map<String, dynamic>) value) {
-    _initializeMethodCall();
-    _onNotificationTap = value;
-  }
-
-  static Function(Map<String, dynamic>) get onNotificationTap =>
-      _onNotificationTap;
-//endregion
 
   static Future<Map<String, dynamic>> launchNotification() async {
     return _channel.invokeMethod('launchNotification');
+  }
+
+  static Future<void> configure({
+    @required Function(Map<String, dynamic>) onNotificationArrival,
+    @required Function(Map<String, dynamic>) onNotificationTap,
+  }) async {
+    _initializeMethodCall();
+    _onNotificationArrival = onNotificationArrival;
+    _onNotificationTap = onNotificationTap;
+    await _channel.invokeMethod('configure');
   }
 
 //region APIs
@@ -86,7 +76,7 @@ class MPush {
     List<Map<String, dynamic>> topicsDictionaries =
         topics.map((t) => t.toApiDictionary()).toList();
     apiParameters['topics'] = json.encode(topicsDictionaries);
-    print(apiParameters);
+
     String apiName = 'api/register';
 
     var requestBody = json.encode(apiParameters);
@@ -233,14 +223,14 @@ class MPush {
         break;
       case 'pushArrived':
         if (methodCall.arguments is Map<String, dynamic> &&
-            onNotificationArrival != null) {
-          onNotificationArrival(methodCall.arguments);
+            _onNotificationArrival != null) {
+          _onNotificationArrival(methodCall.arguments);
         }
         break;
       case 'pushTapped':
         if (methodCall.arguments is Map<String, dynamic> &&
-            onNotificationTap != null) {
-          onNotificationTap(methodCall.arguments);
+            _onNotificationTap != null) {
+          _onNotificationTap(methodCall.arguments);
         }
         break;
       default:

@@ -30,12 +30,14 @@ class _MyAppState extends State<MyApp> {
       );
       print('Registered');
     };
-    MPush.onNotificationArrival = (notification) {
-      print("Notification arrived: $notification");
-    };
-    MPush.onNotificationTap = (notification) {
-      print("Notification tapped: $notification");
-    };
+    MPush.configure(
+      onNotificationArrival: (notification) {
+        print("Notification arrived: $notification");
+      },
+      onNotificationTap: (notification) {
+        print("Notification tapped: $notification");
+      },
+    );
 
     MPush.requestToken();
 
