@@ -24,7 +24,6 @@ class MpushPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
     private var applicationContext: Context? = null
 
     override fun onAttachedToEngine(@NonNull binding: FlutterPlugin.FlutterPluginBinding) {
-        FirebaseApp.initializeApp(binding.applicationContext)
         channel = MethodChannel(binding.flutterEngine.dartExecutor, "mpush")
         channel.setMethodCallHandler(this)
     }
@@ -54,7 +53,6 @@ class MpushPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
         fun registerWith(registrar: Registrar) {
             val plugin = MpushPlugin()
             val channel = MethodChannel(registrar.messenger(), "mpush")
-            FirebaseApp.initializeApp(registrar.activeContext())
             channel.setMethodCallHandler(plugin)
         }
     }
