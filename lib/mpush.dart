@@ -54,7 +54,7 @@ class MPush {
     _onNotificationTap = onNotificationTap;
     await _channel.invokeMethod(
       'configure',
-      androidNotificationsSettings,
+      androidNotificationsSettings.toMethodChannelArguments(),
     );
   }
 
