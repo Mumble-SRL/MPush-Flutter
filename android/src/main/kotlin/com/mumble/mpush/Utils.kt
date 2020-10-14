@@ -1,10 +1,14 @@
 package com.mumble.mpush
 
+import android.app.Notification
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
 import android.content.pm.ApplicationInfo
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.os.Build
 import org.json.JSONObject
 import java.io.InputStream
 import java.net.HttpURLConnection
@@ -52,5 +56,19 @@ class Utils {
             return false
         }
 
+        fun createNotificationChannelPush(context: Context, channelId: String, channelName: String, channelDescription: String) {
+            if (Build.VERSION.SDK_INT < 26) {
+                return
+            }
+            val mNotificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            val importance = NotificationManager.IMPORTANCE_HIGH
+            val mChannel = NotificationChannel(channelId, channelName, importance)
+            mChannel.description = channelDescription
+            mChannel.enableLights(true)
+            mChannel.setShowBadge(true)
+            mChannel.enableVibration(true)
+            mChannel.lockscreenVisibility = Notification.VISIBILITY_PUBLIC
+            mNotificationManager.createNotificationChannel(mChannel)
+        }
     }
 }

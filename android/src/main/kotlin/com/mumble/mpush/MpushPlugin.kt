@@ -50,10 +50,14 @@ class MpushPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
     companion object {
 
         var channelId: String? = null
+        var channelName: String? = null
+        var channelDescription: String? = null
         var icon: String? = null
 
         fun setConfiguration(map: Map<String, Any>) {
             channelId = map["channelId"] as String
+            channelName = map["channelName"] as String
+            channelDescription = map["channelDescription"] as String
             icon = map["icon"] as String
         }
 
@@ -71,6 +75,7 @@ class MpushPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
 
             "configure" -> {
                 setConfiguration(call.arguments as Map<String, Any>)
+                Utils.createNotificationChannelPush(applicationContext!!, channelId!!, channelName!!, channelDescription!!)
             }
 
             "launchNotification" -> {
