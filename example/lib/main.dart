@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mpush/mp_android_notifications_settings.dart';
 import 'package:mpush/mp_topic.dart';
 import 'package:mpush/mpush.dart';
 
@@ -30,14 +31,19 @@ class _MyAppState extends State<MyApp> {
       );
       print('Registered');
     };
-    /*MPush.configure(
+
+    MPush.configure(
       onNotificationArrival: (notification) {
         print("Notification arrived: $notification");
       },
       onNotificationTap: (notification) {
         print("Notification tapped: $notification");
       },
-    );*/
+      androidNotificationsSettings: MPAndroidNotificationsSettings(
+        channelId: 'mpush_example',
+        icon: '@mipmap/icon_notif',
+      ),
+    );
 
     MPush.requestToken();
 

@@ -32,6 +32,39 @@ $ flutter pub get
 
 ## Android
 
+To integrate your plugin into the Android part of your app, follow these steps (from the firebase messaging plugin):
+
+1. Using the [Firebase Console](https://console.firebase.google.com/) add an Android app to your project: Follow the assistant, download the generated `google-services.json` file and place it inside `android/app`.
+
+2. Add the classpath to the [project]/android/build.gradle file.
+
+``` 
+dependencies {
+  // Example existing classpath
+  classpath 'com.android.tools.build:gradle:3.5.3'
+  // Add the google services classpath
+  classpath 'com.google.gms:google-services:4.3.2'
+}
+```
+
+3. Add the apply plugin to the `[project]/android/app/build.gradle` file.
+
+```
+// ADD THIS AT THE BOTTOM
+apply plugin: 'com.google.gms.google-services'
+```
+
+> Note: If this section is not completed you will get an error like this:
+
+```
+java.lang.IllegalStateException:
+Default FirebaseApp is not initialized in this process [package name].
+Make sure to call FirebaseApp.initializeApp(Context) first.
+```
+> Note: When you are debugging on Android, use a device or AVD with Google Play services. Otherwise you will not be able to authenticate.
+ 
+//TODO: add other steps
+
 ## iOS
 
 The first thing you have to do is to setup the iOS project is to enable the push notification capability to your project. Open the project in Xcode going in ios -> Runner.xcworkspace, then in the Signing & Capabilities tab click on the + Capability button and select "Push Notifications"
@@ -143,7 +176,7 @@ The first thing you need to do is to set your `apiToken`:
 ``` dart
 MPush.apiToken = '5WcAhfzt1QTE2N7aGvcGehFFjooZd2SyByys8vAf';
 ```
-Then you need to configure MPush with the callbacks that will be called when a notifcation arrives or is tapped.
+Then you need to configure MPush with the callbacks that will be called when a notifcation arrives or is tapped and the android notification settings.
 
 ``` dart
 MPush.configure(
@@ -153,8 +186,17 @@ MPush.configure(
   onNotificationTap: (notification) {
     print("Notification tapped: $notification");
   },
+  androidNotificationsSettings: MPAndroidNotificationsSettings(
+    channelId: 'mpush_example',
+    icon: '@mipmap/icon_notif',
+  ),
 );
 ```
+
+To configure the Android part you need to pass a `MPAndroidNotificationsSettings` to the configure sections, it has 2 parameters:
+
+-  `channelId`: the id of the channel
+-  `icon`: the default icon for the notification, in the example application the icon is in the res folder as a mipmap, so it's adressed as `@mipmap/icon_notif`
 
 ## Request a token
 
@@ -194,7 +236,7 @@ MPush.onToken = (token) async {
 The topic are instances of the `MPTopic` class which has 3 properties:
 
 - `code`: the id of the topic
-- *[Optional]* `title`: the readable title of the topic that will be displayed in the dashboard, if this is not setted it will be equal to `code`.
+- *[Optional]* `title`: the readable title of the topic that will be displayed in the dashboard, if this is not set it will be equal to `code`.
 - *[Optional]* `single`: if this topic represents a single device or a group of devices, by default `false`.
 
 
