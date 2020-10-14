@@ -41,6 +41,8 @@ class _MyAppState extends State<MyApp> {
       },
       androidNotificationsSettings: MPAndroidNotificationsSettings(
         channelId: 'mpush_example',
+        channelName: 'mpush',
+        channelDescription: 'mpush',
         icon: '@mipmap/icon_notif',
       ),
     );
