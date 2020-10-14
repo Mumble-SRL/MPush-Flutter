@@ -59,7 +59,7 @@ class MPushFirebaseMessagingService : FirebaseMessagingService() {
 
     fun sendNotification(title: String, body: String, image: String?) {
         if (MpushPlugin.channelId != null) {
-            Log.d("body", MpushPlugin.channelId)
+            Log.d("channelId", MpushPlugin.channelId)
 
             var iconResource: Int? = null
             if (MpushPlugin.icon != null) {
