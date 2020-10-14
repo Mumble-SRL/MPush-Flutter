@@ -5,10 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="24e8f421-6fe3-4b31-a9d5-882abe709f5c" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/android/src/main/kotlin/com/mumble/mpush/MPushFirebaseMessagingService.kt" beforeDir="false" afterPath="$PROJECT_DIR$/android/src/main/kotlin/com/mumble/mpush/MPushFirebaseMessagingService.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/android/src/main/kotlin/com/mumble/mpush/Utils.kt" beforeDir="false" afterPath="$PROJECT_DIR$/android/src/main/kotlin/com/mumble/mpush/Utils.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/mp_android_notifications_settings.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/mp_android_notifications_settings.dart" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

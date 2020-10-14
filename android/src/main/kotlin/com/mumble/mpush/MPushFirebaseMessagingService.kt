@@ -7,13 +7,12 @@ import android.util.Log
 import androidx.core.app.NotificationCompat
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
+import org.json.JSONObject
 import kotlin.random.Random
 
 class MPushFirebaseMessagingService : FirebaseMessagingService() {
 
     override fun onMessageReceived(message: RemoteMessage) {
-        Log.d("OKPUSH", "PUSH")
-
         val body: String? = message.data["body"]
         var title: String? = message.data["title"]
 
@@ -30,13 +29,16 @@ class MPushFirebaseMessagingService : FirebaseMessagingService() {
 
         var image: String? = null
         if (message.data.containsKey("custom")) {
-            val custom = message.data["custom"] as Map<String, Any>
-            var mediaUrl = custom["media_url"] as String
-            val extension = mediaUrl.substring(mediaUrl.lastIndexOf("."));
-            if (extension.contains("png") ||
-                    extension.endsWith("jpg") ||
-                    extension.endsWith("jpeg")) {
-                image = mediaUrl
+            val custom = message.data["custom"] as String
+            val jCustom = JSONObject(custom)
+            if (Utils.isJSONOk(jCustom, "media_url")) {
+                var mediaUrl = jCustom.getString("media_url")
+                val extension = mediaUrl.substring(mediaUrl.lastIndexOf("."));
+                if (extension.contains("png") ||
+                        extension.endsWith("jpg") ||
+                        extension.endsWith("jpeg")) {
+                    image = mediaUrl
+                }
             }
         }
 
