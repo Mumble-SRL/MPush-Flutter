@@ -5,6 +5,7 @@ import android.content.Intent
 import android.content.pm.ApplicationInfo
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import org.json.JSONObject
 import java.io.InputStream
 import java.net.HttpURLConnection
 import java.net.URL
@@ -41,5 +42,15 @@ class Utils {
                 null
             }
         }
+
+        fun isJSONOk(json: JSONObject, key: String): Boolean {
+            if (json.has(key)) {
+                if (!json.isNull(key)) {
+                    return true
+                }
+            }
+            return false
+        }
+
     }
 }
