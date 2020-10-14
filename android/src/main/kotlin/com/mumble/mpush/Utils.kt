@@ -3,6 +3,12 @@ package com.mumble.mpush
 import android.content.Context
 import android.content.Intent
 import android.content.pm.ApplicationInfo
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import java.io.InputStream
+import java.net.HttpURLConnection
+import java.net.URL
+
 
 class Utils {
     companion object {
@@ -22,5 +28,18 @@ class Utils {
             return context.resources.getIdentifier(name, "drawable", context.packageName)
         }
 
+        fun getBitmapfromUrl(imageUrl: String): Bitmap? {
+            return try {
+                val url = URL(imageUrl)
+                val connection: HttpURLConnection = url.openConnection() as HttpURLConnection
+                connection.doInput = true
+                connection.connect()
+                val input: InputStream = connection.inputStream
+                BitmapFactory.decodeStream(input)
+            } catch (e: Exception) {
+                e.printStackTrace()
+                null
+            }
+        }
     }
 }
