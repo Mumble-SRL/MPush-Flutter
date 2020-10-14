@@ -17,7 +17,7 @@ class MPAndroidNotificationsSettings {
   /// Convert this object to a map that can be sent to the method channel
   Map<String, dynamic> toMethodChannelArguments() {
     return {
-      'channel_id': channelId,
+      'channelId': channelId,
       'icon': icon,
     };
   }
