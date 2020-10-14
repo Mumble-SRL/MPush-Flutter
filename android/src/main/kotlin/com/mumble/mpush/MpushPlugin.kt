@@ -4,7 +4,6 @@ import android.app.Activity
 import android.content.Context
 import androidx.annotation.NonNull
 import com.google.android.gms.tasks.OnCompleteListener
-import com.google.firebase.FirebaseApp
 import com.google.firebase.messaging.FirebaseMessaging
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.embedding.engine.plugins.activity.ActivityAware
@@ -49,6 +48,15 @@ class MpushPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
     }
 
     companion object {
+
+        var channelId: String? = null
+        var icon: String? = null
+
+        fun setConfiguration(map: Map<String, Any>) {
+            channelId = map["channelId"] as String
+            icon = map["icon"] as String
+        }
+
         @JvmStatic
         fun registerWith(registrar: Registrar) {
             val plugin = MpushPlugin()
@@ -60,6 +68,11 @@ class MpushPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
     override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: Result) {
         when (call.method) {
             "requestToken" -> requestFirebaseToken(result)
+
+            "configure" -> {
+                setConfiguration(call.arguments as Map<String, Any>)
+            }
+
             "launchNotification" -> {
             }//TODO: return the launch notification map if present
             else -> result.notImplemented()
