@@ -7,7 +7,6 @@ import android.util.Log
 import androidx.core.app.NotificationCompat
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
-import org.json.JSONArray
 import org.json.JSONObject
 import kotlin.random.Random
 
@@ -32,21 +31,15 @@ class MPushFirebaseMessagingService : FirebaseMessagingService() {
         if (message.data.containsKey("custom")) {
             val custom = message.data["custom"] as String
             Log.d("custom", custom)
-
-            val jCustom = JSONArray(custom)
-            for (i in 0 until jCustom.length()) {
-                val jObj = jCustom.get(i)
-                Log.d("jObj", jObj.toString())
-
-                if (jObj is JSONObject) {
-                    if (Utils.isJSONOk(jObj, "media_url")) {
-                        var mediaUrl = jObj.getString("media_url")
-                        val extension = mediaUrl.substring(mediaUrl.lastIndexOf("."));
-                        if (extension.contains("png") ||
-                                extension.endsWith("jpg") ||
-                                extension.endsWith("jpeg")) {
-                            image = mediaUrl
-                        }
+            if (custom != "[]") {
+                val jCustom = JSONObject(custom)
+                if (Utils.isJSONOk(jCustom, "media_url")) {
+                    var mediaUrl = jCustom.getString("media_url")
+                    val extension = mediaUrl.substring(mediaUrl.lastIndexOf("."));
+                    if (extension.contains("png") ||
+                            extension.endsWith("jpg") ||
+                            extension.endsWith("jpeg")) {
+                        image = mediaUrl
                     }
                 }
             }
