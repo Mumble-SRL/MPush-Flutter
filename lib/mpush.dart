@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 
 import 'package:flutter/services.dart';
+import 'package:mpush/mp_android_notifications_settings.dart';
 import 'package:mpush/mp_topic.dart';
 import 'package:mpush/mpush_api.dart';
 
@@ -40,16 +41,21 @@ class MPush {
 
   /// Configures the MPush plugin with the callbacks.
   ///
-  /// @param onNotificationArrival: called when a push notification arrives.
-  /// @param onNotificationTap: called when a push notification is tapped.
+  /// @param onNotificationArrival Called when a push notification arrives.
+  /// @param onNotificationTap Called when a push notification is tapped.
+  /// @param androidNotificationsSettings Settings for the android notification.
   static Future<void> configure({
     @required Function(Map<String, dynamic>) onNotificationArrival,
     @required Function(Map<String, dynamic>) onNotificationTap,
+    @required MPAndroidNotificationsSettings androidNotificationsSettings,
   }) async {
     _initializeMethodCall();
     _onNotificationArrival = onNotificationArrival;
     _onNotificationTap = onNotificationTap;
-    await _channel.invokeMethod('configure');
+    await _channel.invokeMethod(
+      'configure',
+      androidNotificationsSettings,
+    );
   }
 
 //region APIs
@@ -114,8 +120,6 @@ class MPush {
 
 //region method call handler
   static Future<dynamic> _mPushHandler(MethodCall methodCall) async {
-    print(methodCall.method);
-    print(methodCall.arguments);
     switch (methodCall.method) {
       case 'onToken':
         if (methodCall.arguments is String && onToken != null) {
@@ -143,7 +147,7 @@ class MPush {
   /// If method call has been initialized or not
   static bool _methodCallInitialized = false;
 
-  /// Called when setting onToken or onPushNotificationTap to initialize the callbacks
+  /// Initialize the callbacks from the native side to dart
   static Future<void> _initializeMethodCall() async {
     if (!_methodCallInitialized) {
       _methodCallInitialized = true;

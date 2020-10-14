@@ -176,7 +176,7 @@ The first thing you need to do is to set your `apiToken`:
 ``` dart
 MPush.apiToken = '5WcAhfzt1QTE2N7aGvcGehFFjooZd2SyByys8vAf';
 ```
-Then you need to configure MPush with the callbacks that will be called when a notifcation arrives or is tapped.
+Then you need to configure MPush with the callbacks that will be called when a notifcation arrives or is tapped and the android notification settings.
 
 ``` dart
 MPush.configure(
@@ -186,8 +186,17 @@ MPush.configure(
   onNotificationTap: (notification) {
     print("Notification tapped: $notification");
   },
+  androidNotificationsSettings: MPAndroidNotificationsSettings(
+    channelId: 'mpush_example',
+    icon: '@mipmap/icon_notif',
+  ),
 );
 ```
+
+To configure the Android part you need to pass a `MPAndroidNotificationsSettings` to the configure sections, it has 2 parameters:
+
+-  `channelId`: the id of the channel
+-  `icon`: the default icon for the notification, in the example application the icon is in the res folder as a mipmap, so it's adressed as `@mipmap/icon_notif`
 
 ## Request a token
 
