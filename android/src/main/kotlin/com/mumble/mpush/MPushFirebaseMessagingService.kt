@@ -8,9 +8,10 @@ import androidx.core.app.NotificationCompat
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
+import com.google.gson.Gson
 import org.json.JSONObject
-import java.io.Serializable
 import kotlin.random.Random
+
 
 class MPushFirebaseMessagingService : FirebaseMessagingService() {
 
@@ -54,6 +55,7 @@ class MPushFirebaseMessagingService : FirebaseMessagingService() {
 
     fun sendNotification(map: Map<String, String>, title: String, body: String, image: String?) {
         if (MpushPlugin.channelId != null) {
+            val gson = Gson()
             Log.d("channelId", MpushPlugin.channelId)
 
             var iconResource: Int? = null
@@ -67,7 +69,7 @@ class MPushFirebaseMessagingService : FirebaseMessagingService() {
             val intent = Utils.getLauncherActivity(applicationContext)
             intent?.action = MpushPlugin.ACTION_CLICKED_NOTIFICATION
             intent?.flags = Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP
-            intent?.putExtra("map", map as Serializable)
+            intent?.putExtra("map", gson.toJson(map))
 
             val contentIntent = PendingIntent.getActivity(applicationContext, notificationID, intent, PendingIntent.FLAG_UPDATE_CURRENT)
             val notificationBuilder = NotificationCompat.Builder(applicationContext, MpushPlugin.channelId!!)
@@ -95,7 +97,7 @@ class MPushFirebaseMessagingService : FirebaseMessagingService() {
             }
 
             val createIntent = Intent(MpushPlugin.ACTION_CREATED_NOTIFICATION)
-            createIntent.putExtra("map", map.toString())
+            createIntent.putExtra("map", gson.toJson(map))
             LocalBroadcastManager.getInstance(applicationContext).sendBroadcast(createIntent)
             mNotificationManager.notify(notificationID, notificationBuilder.build())
         }
