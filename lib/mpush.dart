@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:flutter/foundation.dart';
 
 import 'package:flutter/services.dart';
@@ -36,7 +37,14 @@ class MPush {
 
   /// The notification that launched the app, if present, otherwise `null`.
   static Future<Map<String, dynamic>> launchNotification() async {
-    return _channel.invokeMethod('launchNotification');
+    dynamic result = await _channel.invokeMethod('launchNotification');
+    if (result == null) {
+      return result;
+    } else if (result is Map<String, dynamic>) {
+      return result;
+    } else if (result is String) {
+      return json.decode(result);
+    }
   }
 
   /// Configures the MPush plugin with the callbacks.
@@ -127,15 +135,23 @@ class MPush {
         }
         break;
       case 'pushArrived':
-        if (methodCall.arguments is Map<String, dynamic> &&
-            _onNotificationArrival != null) {
-          _onNotificationArrival(methodCall.arguments);
+        if (_onNotificationArrival != null) {
+          if (methodCall.arguments is Map<String, dynamic>) {
+            _onNotificationArrival(methodCall.arguments);
+          } else if (methodCall.arguments is String) {
+            Map<String, dynamic> map = json.decode(methodCall.arguments);
+            _onNotificationArrival(map);
+          }
         }
         break;
       case 'pushTapped':
-        if (methodCall.arguments is Map<String, dynamic> &&
-            _onNotificationTap != null) {
-          _onNotificationTap(methodCall.arguments);
+        if (_onNotificationTap != null) {
+          if (methodCall.arguments is Map<String, dynamic>) {
+            _onNotificationTap(methodCall.arguments);
+          } else if (methodCall.arguments is String) {
+            Map<String, dynamic> map = json.decode(methodCall.arguments);
+            _onNotificationTap(map);
+          }
         }
         break;
       default:
