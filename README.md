@@ -200,7 +200,7 @@ To configure the Android part you need to pass a `MPAndroidNotificationsSettings
 -  `channelId`: the id of the channel
 -  `channelName`: the name for the channel
 -  `channelDescription`: the description for the channel
--  `icon`: the default icon for the notification, in the example application the icon is in the res folder as a mipmap, so it's adressed as `@mipmap/icon_notif`
+-  `icon`: the default icon for the notification, in the example application the icon is in the res folder as a mipmap, so it's adressed as `@mipmap/icon_notif`, iff the icon is a drawable use `@drawable/icon_notif`.
 
 ## Request a token
 
