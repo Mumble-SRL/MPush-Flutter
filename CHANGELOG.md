@@ -1,4 +1,4 @@
-## 0.0.1+1
+## 0.0.1+2
 
-* Updated Android implementation
 * Updated Readme
+* Updated example
