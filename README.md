@@ -210,7 +210,7 @@ To request a notification token you need to do the following thiings:
 
 ``` dart
 MPush.onToken = (token) {
-	print("Token retrieved: $token");
+    print("Token retrieved: $token");
 }
 ```
 
@@ -244,7 +244,7 @@ The topic are instances of the `MPTopic` class which has 3 properties:
 - *[Optional]* `single`: if this topic represents a single device or a group of devices, by default `false`.
 
 
-## Launch notification
+## Launch notification
 
 If the application was launched from a notification you can retrieve the data of the notification like this, this will be `null` if the application was launched normally:
 
