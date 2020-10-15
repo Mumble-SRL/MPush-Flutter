@@ -157,10 +157,10 @@ class MpushPlugin : FlutterPlugin, BroadcastReceiver(), PluginRegistry.NewIntent
     }
 
     private fun getNotificationAppLaunchDetails(result: Result) {
-        var payload: Map<String, Any>? = null
+        var payload: String? = null
         val notificationLaunchedApp = mainActivity != null && ACTION_CLICKED_NOTIFICATION.equals(mainActivity!!.intent.action) && !launchedActivityFromHistory(mainActivity!!.intent)
         if (notificationLaunchedApp) {
-            payload = launchIntent?.getSerializableExtra("map") as Map<String, Any>
+            payload = launchIntent?.getStringExtra("map")
         }
 
         result.success(payload)
