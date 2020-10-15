@@ -37,12 +37,12 @@ class MpushPlugin : FlutterPlugin, BroadcastReceiver(), PluginRegistry.NewIntent
         intentFilter.addAction(ACTION_CREATED_NOTIFICATION)
         intentFilter.addAction(ACTION_CLICKED_NOTIFICATION)
         LocalBroadcastManager.getInstance(binding.applicationContext).registerReceiver(this, intentFilter)
-        Log.d("LocalBroadcastManager", "OK")
+        //Log.d("LocalBroadcastManager", "OK")
     }
 
     override fun onDetachedFromEngine(@NonNull binding: FlutterPlugin.FlutterPluginBinding) {
         LocalBroadcastManager.getInstance(binding.applicationContext).unregisterReceiver(this)
-        Log.d("LocalBroadcastManager", "REMOVED")
+        //Log.d("LocalBroadcastManager", "REMOVED")
         channel.setMethodCallHandler(null)
     }
 
@@ -134,10 +134,10 @@ class MpushPlugin : FlutterPlugin, BroadcastReceiver(), PluginRegistry.NewIntent
     }
 
     override fun onReceive(context: Context?, intent: Intent) {
-        Log.d("onReceive", "DO")
+        //Log.d("onReceive", "DO")
         val action = intent.action ?: return
         if (action == ACTION_CREATED_NOTIFICATION) {
-            Log.d("onReceive", "ACTION_CREATED_NOTIFICATION")
+            //Log.d("onReceive", "ACTION_CREATED_NOTIFICATION")
             val extras = intent.extras ?: return
             val map = extras.getString("map") ?: return
             channel.invokeMethod("pushArrived", map)

@@ -19,8 +19,8 @@ class MPushFirebaseMessagingService : FirebaseMessagingService() {
         val body: String? = message.data["body"]
         var title: String? = message.data["title"]
 
-        Log.d("body", body)
-        Log.d("title", title)
+        //Log.d("body", body)
+        //Log.d("title", title)
 
         if (title == null) {
             title = Utils.getApplicationName(applicationContext)
@@ -33,7 +33,7 @@ class MPushFirebaseMessagingService : FirebaseMessagingService() {
         var image: String? = null
         if (message.data.containsKey("custom")) {
             val custom = message.data["custom"] as String
-            Log.d("custom", custom)
+            //Log.d("custom", custom)
             if (custom != "[]") {
                 val jCustom = JSONObject(custom)
                 if (Utils.isJSONOk(jCustom, "media_url")) {
@@ -56,7 +56,7 @@ class MPushFirebaseMessagingService : FirebaseMessagingService() {
     fun sendNotification(map: Map<String, String>, title: String, body: String, image: String?) {
         if (MpushPlugin.channelId != null) {
             val gson = Gson()
-            Log.d("channelId", MpushPlugin.channelId)
+            //Log.d("channelId", MpushPlugin.channelId)
 
             var iconResource: Int? = null
             if (MpushPlugin.icon != null) {

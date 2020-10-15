@@ -62,8 +62,8 @@ Default FirebaseApp is not initialized in this process [package name].
 Make sure to call FirebaseApp.initializeApp(Context) first.
 ```
 > Note: When you are debugging on Android, use a device or AVD with Google Play services. Otherwise you will not be able to authenticate.
- 
-//TODO: add other steps
+
+
 
 ## iOS
 
@@ -188,6 +188,8 @@ MPush.configure(
   },
   androidNotificationsSettings: MPAndroidNotificationsSettings(
     channelId: 'mpush_example',
+    channelName: 'MPush Notifications',
+    channelDescription: 'Push notification channel', 
     icon: '@mipmap/icon_notif',
   ),
 );
@@ -196,6 +198,8 @@ MPush.configure(
 To configure the Android part you need to pass a `MPAndroidNotificationsSettings` to the configure sections, it has 2 parameters:
 
 -  `channelId`: the id of the channel
+-  `channelName`: the name for the channel
+-  `channelDescription`: the description for the channel
 -  `icon`: the default icon for the notification, in the example application the icon is in the res folder as a mipmap, so it's adressed as `@mipmap/icon_notif`
 
 ## Request a token
@@ -211,10 +215,10 @@ MPush.onToken = (token) {
 ```
 
 2. Request the token using MPush:
- 
+
 ``` dart
 MPush.requestToken();
-``` 
+```
 
 ## Register to topics
 
@@ -231,7 +235,7 @@ MPush.onToken = (token) async {
   );
   print('Registered');
 };
-``` 
+```
 
 The topic are instances of the `MPTopic` class which has 3 properties:
 
@@ -247,4 +251,4 @@ If the application was launched from a notification you can retrieve the data of
 ``` dart
 Map<String, dynamic> launchNotification = await MPush.launchNotification();
 print(launchNotification);
-``` 
+```
