@@ -101,9 +101,9 @@ class MpushPlugin : FlutterPlugin, BroadcastReceiver(), PluginRegistry.NewIntent
                 Utils.createNotificationChannelPush(applicationContext!!, channelId!!, channelName!!, channelDescription!!)
             }
 
-            /*"launchNotification" -> {
+            "launchNotification" -> {
                 getNotificationAppLaunchDetails(result)
-            }*/
+            }
 
             else -> result.notImplemented()
         }
@@ -146,5 +146,19 @@ class MpushPlugin : FlutterPlugin, BroadcastReceiver(), PluginRegistry.NewIntent
             mainActivity!!.intent = intent
         }
         return res
+    }
+
+    private fun launchedActivityFromHistory(intent: Intent?): Boolean {
+        return intent != null && intent.flags and Intent.FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY == Intent.FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY
+    }
+
+    private fun getNotificationAppLaunchDetails(result: Result) {
+        var payload: String? = null
+        val notificationLaunchedApp = mainActivity != null && ACTION_CLICKED_NOTIFICATION.equals(mainActivity!!.intent.action) && !launchedActivityFromHistory(mainActivity!!.intent)
+        if (notificationLaunchedApp) {
+            payload = launchIntent?.getStringExtra("map")
+        }
+
+        result.success(payload)
     }
 }
