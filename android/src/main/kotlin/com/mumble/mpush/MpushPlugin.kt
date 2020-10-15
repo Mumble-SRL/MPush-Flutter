@@ -1,8 +1,12 @@
 package com.mumble.mpush
 
 import android.app.Activity
+import android.content.BroadcastReceiver
 import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import androidx.annotation.NonNull
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.messaging.FirebaseMessaging
 import io.flutter.embedding.engine.plugins.FlutterPlugin
@@ -12,24 +16,39 @@ import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
+import io.flutter.plugin.common.PluginRegistry
 import io.flutter.plugin.common.PluginRegistry.Registrar
+
 
 /** MpushPlugin */
 
-class MpushPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
+class MpushPlugin : FlutterPlugin, BroadcastReceiver(), PluginRegistry.NewIntentListener, MethodCallHandler, ActivityAware {
 
     private lateinit var channel: MethodChannel
     private var mainActivity: Activity? = null
     private var applicationContext: Context? = null
+    private var launchIntent: Intent? = null
 
     override fun onAttachedToEngine(@NonNull binding: FlutterPlugin.FlutterPluginBinding) {
         channel = MethodChannel(binding.flutterEngine.dartExecutor, "mpush")
         channel.setMethodCallHandler(this)
+
+        val intentFilter = IntentFilter()
+        intentFilter.addAction(ACTION_CREATED_NOTIFICATION)
+        intentFilter.addAction(ACTION_CLICKED_NOTIFICATION)
+        LocalBroadcastManager.getInstance(binding.applicationContext).registerReceiver(this, intentFilter)
+    }
+
+    override fun onDetachedFromEngine(@NonNull binding: FlutterPlugin.FlutterPluginBinding) {
+        LocalBroadcastManager.getInstance(binding.applicationContext).unregisterReceiver(this)
+        channel.setMethodCallHandler(null)
     }
 
     override fun onAttachedToActivity(binding: ActivityPluginBinding) {
         this.mainActivity = binding.activity
         this.applicationContext = binding.activity.applicationContext
+        this.launchIntent = mainActivity?.intent
+        binding.addOnNewIntentListener(this)
     }
 
     override fun onDetachedFromActivityForConfigChanges() {
@@ -40,6 +59,7 @@ class MpushPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
     override fun onReattachedToActivityForConfigChanges(binding: ActivityPluginBinding) {
         this.mainActivity = binding.activity
         this.applicationContext = binding.activity.applicationContext
+        binding.addOnNewIntentListener(this)
     }
 
     override fun onDetachedFromActivity() {
@@ -48,6 +68,9 @@ class MpushPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
     }
 
     companion object {
+
+        const val ACTION_CREATED_NOTIFICATION = "mpush_create_notification"
+        const val ACTION_CLICKED_NOTIFICATION = "mpush_clicked_notification"
 
         var channelId: String? = null
         var channelName: String? = null
@@ -78,19 +101,12 @@ class MpushPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
                 Utils.createNotificationChannelPush(applicationContext!!, channelId!!, channelName!!, channelDescription!!)
             }
 
-            "launchNotification" -> {
-            }//TODO: return the launch notification map if present
+            /*"launchNotification" -> {
+                getNotificationAppLaunchDetails(result)
+            }*/
+
             else -> result.notImplemented()
         }
-
-        /// TODO: when notification arrives the plugin should show it (even downloading the image) and call
-        /// the channel method pushArrived
-
-        // TODO: when a push is tapped the plugin should call pushTapped
-    }
-
-    override fun onDetachedFromEngine(@NonNull binding: FlutterPlugin.FlutterPluginBinding) {
-        channel.setMethodCallHandler(null)
     }
 
     private fun requestFirebaseToken(result: Result) {
@@ -106,4 +122,29 @@ class MpushPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
         result.success(true)
     }
 
+    private fun sendNotificationPayloadMessage(intent: Intent): Boolean {
+        if (intent.action == ACTION_CLICKED_NOTIFICATION) {
+            val payload = intent.getStringExtra("map")
+            channel.invokeMethod("pushTapped", payload)
+            return true
+        }
+        return false
+    }
+
+    override fun onReceive(context: Context?, intent: Intent) {
+        val action = intent.action ?: return
+        if (action == ACTION_CREATED_NOTIFICATION) {
+            val extras = intent.extras ?: return
+            val map = extras.getString("map") ?: return
+            channel.invokeMethod("pushArrived", map)
+        }
+    }
+
+    override fun onNewIntent(intent: Intent): Boolean {
+        val res: Boolean = sendNotificationPayloadMessage(intent)
+        if (res && mainActivity != null) {
+            mainActivity!!.intent = intent
+        }
+        return res
+    }
 }
