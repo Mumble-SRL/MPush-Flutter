@@ -67,7 +67,7 @@ class MPushFirebaseMessagingService : FirebaseMessagingService() {
             val intent = Utils.getLauncherActivity(applicationContext)
             intent?.action = MpushPlugin.ACTION_CLICKED_NOTIFICATION
             intent?.flags = Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP
-            intent?.putExtra("map", map.toString())
+            intent?.putExtra("map", map as Serializable)
 
             val contentIntent = PendingIntent.getActivity(applicationContext, notificationID, intent, PendingIntent.FLAG_UPDATE_CURRENT)
             val notificationBuilder = NotificationCompat.Builder(applicationContext, MpushPlugin.channelId!!)
@@ -94,8 +94,7 @@ class MPushFirebaseMessagingService : FirebaseMessagingService() {
                 notificationBuilder.setStyle(NotificationCompat.BigTextStyle().bigText(body))
             }
 
-            val createIntent = Intent()
-            createIntent.action = MpushPlugin.ACTION_CREATED_NOTIFICATION
+            val createIntent = Intent(MpushPlugin.ACTION_CREATED_NOTIFICATION)
             createIntent.putExtra("map", map.toString())
             LocalBroadcastManager.getInstance(applicationContext).sendBroadcast(createIntent)
             mNotificationManager.notify(notificationID, notificationBuilder.build())
