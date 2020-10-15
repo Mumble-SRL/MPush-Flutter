@@ -5,6 +5,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.util.Log
 import androidx.annotation.NonNull
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.google.android.gms.tasks.OnCompleteListener
@@ -18,7 +19,6 @@ import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
 import io.flutter.plugin.common.PluginRegistry
 import io.flutter.plugin.common.PluginRegistry.Registrar
-
 
 /** MpushPlugin */
 
@@ -37,10 +37,12 @@ class MpushPlugin : FlutterPlugin, BroadcastReceiver(), PluginRegistry.NewIntent
         intentFilter.addAction(ACTION_CREATED_NOTIFICATION)
         intentFilter.addAction(ACTION_CLICKED_NOTIFICATION)
         LocalBroadcastManager.getInstance(binding.applicationContext).registerReceiver(this, intentFilter)
+        Log.d("LocalBroadcastManager", "OK")
     }
 
     override fun onDetachedFromEngine(@NonNull binding: FlutterPlugin.FlutterPluginBinding) {
         LocalBroadcastManager.getInstance(binding.applicationContext).unregisterReceiver(this)
+        Log.d("LocalBroadcastManager", "REMOVED")
         channel.setMethodCallHandler(null)
     }
 
@@ -132,8 +134,10 @@ class MpushPlugin : FlutterPlugin, BroadcastReceiver(), PluginRegistry.NewIntent
     }
 
     override fun onReceive(context: Context?, intent: Intent) {
+        Log.d("onReceive", "DO")
         val action = intent.action ?: return
         if (action == ACTION_CREATED_NOTIFICATION) {
+            Log.d("onReceive", "ACTION_CREATED_NOTIFICATION")
             val extras = intent.extras ?: return
             val map = extras.getString("map") ?: return
             channel.invokeMethod("pushArrived", map)
@@ -153,10 +157,10 @@ class MpushPlugin : FlutterPlugin, BroadcastReceiver(), PluginRegistry.NewIntent
     }
 
     private fun getNotificationAppLaunchDetails(result: Result) {
-        var payload: String? = null
+        var payload: Map<String, Any>? = null
         val notificationLaunchedApp = mainActivity != null && ACTION_CLICKED_NOTIFICATION.equals(mainActivity!!.intent.action) && !launchedActivityFromHistory(mainActivity!!.intent)
         if (notificationLaunchedApp) {
-            payload = launchIntent?.getStringExtra("map")
+            payload = launchIntent?.getSerializableExtra("map") as Map<String, Any>
         }
 
         result.success(payload)
