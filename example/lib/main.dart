@@ -20,7 +20,7 @@ class _MyAppState extends State<MyApp> {
   }
 
   _setupMPush() async {
-    MPush.apiToken = '5WcAhfzt1QTE2N7aGvcGehFFjooZd2SyByys8vAf';
+    MPush.apiToken = 'YOUR_API_KEY';
     MPush.onToken = (token) async {
       print("Token received $token");
       await MPush.registerDevice(token).catchError(
