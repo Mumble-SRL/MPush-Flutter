@@ -35,6 +35,9 @@ class MPush {
   static Function(Map<String, dynamic>) _onNotificationArrival;
   static Function(Map<String, dynamic>) _onNotificationTap;
 
+  statci Function(Map<String, dynamic>) get onNotificationArrival => _onNotificationArrival;
+  statci Function(Map<String, dynamic>) get onNotificationTap => _onNotificationTap;
+
   /// The notification that launched the app, if present, otherwise `null`.
   static Future<Map<String, dynamic>> launchNotification() async {
     dynamic result = await _channel.invokeMethod('launchNotification');
