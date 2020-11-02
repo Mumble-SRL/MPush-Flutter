@@ -48,6 +48,7 @@ class MPush {
     } else if (result is String) {
       return json.decode(result);
     }
+    return null;
   }
 
   /// Configures the MPush plugin with the callbacks.

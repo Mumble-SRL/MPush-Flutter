@@ -15,7 +15,7 @@ MPush client for Flutter, you can use this plugin to interact with the [MPush](h
 
 # Installation
 
-You can install the MBurger SDK using pub, add this to your `pubspec.yaml` file:
+You can install the MPush SDK using pub, add this to your `pubspec.yaml` file:
 
 ```yaml
 dependencies:
@@ -36,7 +36,7 @@ To integrate your plugin into the Android part of your app, follow these steps (
 
 1. Using the [Firebase Console](https://console.firebase.google.com/) add an Android app to your project: Follow the assistant, download the generated `google-services.json` file and place it inside `android/app`.
 
-2. Add the classpath to the [project]/android/build.gradle file.
+2. Add the classpath to the `[project]/android/build.gradle` file.
 
 ``` 
 dependencies {
@@ -73,7 +73,7 @@ The first thing you have to do is to setup the iOS project is to enable the push
 
 > Note: you will have to use a provisoning profile created for this app, you will not be able to test and receive push notification using a wildcard provisioning profile.
 
-Then yu have to modify the AppDelegate class of your application, open AppDelegate.swift file and add this line in the `didFinishLaunchingWithOptions` function.
+Then yu have to modify the AppDelegate class of your application, open `AppDelegate.swift` file and add this line in the `didFinishLaunchingWithOptions` function.
 
 ``` swift
 UNUserNotificationCenter.current().delegate = self
@@ -174,7 +174,7 @@ class NotificationService: UNNotificationServiceExtension {
 The first thing you need to do is to set your `apiToken`:
 
 ``` dart
-MPush.apiToken = '5WcAhfzt1QTE2N7aGvcGehFFjooZd2SyByys8vAf';
+MPush.apiToken = 'YOUR_API_TOKEN';
 ```
 Then you need to configure MPush with the callbacks that will be called when a notifcation arrives or is tapped and the android notification settings.
 
@@ -204,7 +204,7 @@ To configure the Android part you need to pass a `MPAndroidNotificationsSettings
 
 ## Request a token
 
-To request a notification token you need to do the following thiings:
+To request a notification token you need to do the following things:
 
 1. Set a callback that will be called once the token is received correctly from APNS/FCM 
 
