@@ -1,6 +1,6 @@
 name: mpush
 description: MPush client for Flutter, you can use this plugin to interact with MPush.
-version: 0.0.1+4
+version: 0.0.1+5
 authors:
   - Lorenzo Oliveto <lorenzo.oliveto@mumbleideas.it>
   - Enrico Ori <enrico.ori@mumbleideas.it>
@@ -15,7 +15,7 @@ dependencies:
     sdk: flutter
 
   http: ^0.12.2
-  device_info: ^0.4.2+8
+  device_info: ^1.0.0
 
 dev_dependencies:
   flutter_test:
