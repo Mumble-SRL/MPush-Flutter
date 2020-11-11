@@ -48,15 +48,15 @@ class MPushFirebaseMessagingService : FirebaseMessagingService() {
             }
         }
 
-        body?.let {
-            sendNotification(message.data, title!!, body, image)
-        }
+        sendNotification(message.data, title!!, body, image)
     }
 
-    fun sendNotification(map: Map<String, String>, title: String, body: String, image: String?) {
+    fun sendNotification(map: Map<String, String>, title: String, body: String?, image: String?) {
         if (MpushPlugin.channelId != null) {
+
+            val realBody = (body != null) ? body : "";
+
             val gson = Gson()
-            //Log.d("channelId", MpushPlugin.channelId)
 
             var iconResource: Int? = null
             if (MpushPlugin.icon != null) {
@@ -76,7 +76,7 @@ class MPushFirebaseMessagingService : FirebaseMessagingService() {
 
             notificationBuilder.setContentTitle(title)
                     .setAutoCancel(true)
-                    .setContentText(body)
+                    .setContentText(realBody)
                     .setContentIntent(contentIntent)
 
             if (iconResource != null) {
@@ -87,13 +87,13 @@ class MPushFirebaseMessagingService : FirebaseMessagingService() {
                 val bitmap = Utils.getBitmapfromUrl(image)
                 if (bitmap != null) {
                     notificationBuilder.setStyle(NotificationCompat.BigPictureStyle()
-                            .setSummaryText(body)
+                            .setSummaryText(realBody)
                             .bigPicture(bitmap))
                 } else {
-                    notificationBuilder.setStyle(NotificationCompat.BigTextStyle().bigText(body))
+                    notificationBuilder.setStyle(NotificationCompat.BigTextStyle().bigText(realBody))
                 }
             } else {
-                notificationBuilder.setStyle(NotificationCompat.BigTextStyle().bigText(body))
+                notificationBuilder.setStyle(NotificationCompat.BigTextStyle().bigText(realBody))
             }
 
             val createIntent = Intent(MpushPlugin.ACTION_CREATED_NOTIFICATION)
