@@ -1,3 +1,3 @@
-## 0.0.1+5
+## 0.0.1+6
 
-* Updated dependencies version
+* Updated ternary operator on Android
