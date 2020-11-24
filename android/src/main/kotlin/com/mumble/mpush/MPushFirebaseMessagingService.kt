@@ -54,7 +54,7 @@ class MPushFirebaseMessagingService : FirebaseMessagingService() {
     fun sendNotification(map: Map<String, String>, title: String, body: String?, image: String?) {
         if (MpushPlugin.channelId != null) {
 
-            val realBody = if (body != null) body else "";
+            val realBody = (body != null) ? body : "";
 
             val gson = Gson()
 
