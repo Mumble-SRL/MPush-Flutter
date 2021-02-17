@@ -44,12 +44,17 @@ public class SwiftMpushPlugin: NSObject, FlutterPlugin {
     //MARK: - Application delegate
     
     public func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [AnyHashable : Any] = [:]) -> Bool {
+        UIApplication.shared.applicationIconBadgeNumber = 0
         if let userInfo = launchOptions[UIApplication.LaunchOptionsKey.remoteNotification] as? [String: AnyHashable] {
             launchNotification = userInfo
         }
         return true
     }
     
+    public func applicationWillEnterForeground(_ application: UIApplication) {
+        UIApplication.shared.applicationIconBadgeNumber = 0
+    }
+
     public func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
         if let channel = SwiftMpushPlugin.staticChannel {
             let deviceTokenParts = deviceToken.map { data -> String in
@@ -76,6 +81,7 @@ public class SwiftMpushPlugin: NSObject, FlutterPlugin {
     public func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
         if let channel = SwiftMpushPlugin.staticChannel,
            let userInfo = response.notification.request.content.userInfo as? [String: AnyHashable] {
+            UIApplication.shared.applicationIconBadgeNumber = 0
             channel.invokeMethod("pushTapped", arguments: userInfo)
         }
         completionHandler()
