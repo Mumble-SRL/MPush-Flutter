@@ -5,6 +5,7 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.content.pm.ApplicationInfo
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -69,6 +70,18 @@ class Utils {
             mChannel.enableVibration(true)
             mChannel.lockscreenVisibility = Notification.VISIBILITY_PUBLIC
             mNotificationManager.createNotificationChannel(mChannel)
+        }
+
+        fun getSharedPreferences(context: Context?): SharedPreferences? {
+            return context?.getSharedPreferences("mpushPreferences", Context.MODE_PRIVATE)
+        }
+
+        fun getSharedPreferencesEditor(context: Context?): SharedPreferences.Editor? {
+            if (context != null) {
+                val prefs = context.getSharedPreferences("mpushPreferences", Context.MODE_PRIVATE)
+                return prefs.edit()
+            }
+            return null
         }
     }
 }
