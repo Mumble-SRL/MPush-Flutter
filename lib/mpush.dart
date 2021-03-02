@@ -49,6 +49,8 @@ class MPush {
       return result;
     } else if (result is Map<String, dynamic>) {
       return result;
+    } else if (result is Map) {
+      return Map<String, dynamic>.from(result);
     } else if (result is String) {
       return json.decode(result);
     }
