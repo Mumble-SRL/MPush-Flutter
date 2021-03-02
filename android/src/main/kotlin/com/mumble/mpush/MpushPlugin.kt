@@ -29,9 +29,13 @@ class MpushPlugin : FlutterPlugin, BroadcastReceiver(), PluginRegistry.NewIntent
     private var applicationContext: Context? = null
     private var launchIntent: Intent? = null
 
+    val ACTION_CREATED_NOTIFICATION = "mpush_create_notification"
+    val ACTION_CLICKED_NOTIFICATION = "mpush_clicked_notification"
+
     override fun onAttachedToEngine(@NonNull binding: FlutterPlugin.FlutterPluginBinding) {
         channel = MethodChannel(binding.flutterEngine.dartExecutor, "mpush")
         channel.setMethodCallHandler(this)
+        applicationContext = binding.applicationContext
 
         val intentFilter = IntentFilter()
         intentFilter.addAction(ACTION_CREATED_NOTIFICATION)
@@ -71,21 +75,6 @@ class MpushPlugin : FlutterPlugin, BroadcastReceiver(), PluginRegistry.NewIntent
 
     companion object {
 
-        const val ACTION_CREATED_NOTIFICATION = "mpush_create_notification"
-        const val ACTION_CLICKED_NOTIFICATION = "mpush_clicked_notification"
-
-        var channelId: String? = null
-        var channelName: String? = null
-        var channelDescription: String? = null
-        var icon: String? = null
-
-        fun setConfiguration(map: Map<String, Any>) {
-            channelId = map["channelId"] as String
-            channelName = map["channelName"] as String
-            channelDescription = map["channelDescription"] as String
-            icon = map["icon"] as String
-        }
-
         @JvmStatic
         fun registerWith(registrar: Registrar) {
             val plugin = MpushPlugin()
@@ -100,7 +89,6 @@ class MpushPlugin : FlutterPlugin, BroadcastReceiver(), PluginRegistry.NewIntent
 
             "configure" -> {
                 setConfiguration(call.arguments as Map<String, Any>)
-                Utils.createNotificationChannelPush(applicationContext!!, channelId!!, channelName!!, channelDescription!!)
             }
 
             "launchNotification" -> {
@@ -108,6 +96,24 @@ class MpushPlugin : FlutterPlugin, BroadcastReceiver(), PluginRegistry.NewIntent
             }
 
             else -> result.notImplemented()
+        }
+    }
+
+    private fun setConfiguration(map: Map<String, Any>) {
+        if(applicationContext != null){
+            val channelId = map["channelId"] as String
+            val channelName = map["channelName"] as String
+            val channelDescription = map["channelDescription"] as String
+            val icon = map["icon"] as String
+
+            val editor = Utils.getSharedPreferencesEditor(applicationContext)
+            editor?.putString("channelId", channelId)
+            editor?.putString("channelName", channelName)
+            editor?.putString("channelDescription", channelDescription)
+            editor?.putString("icon", icon)
+            editor?.apply()
+
+            Utils.createNotificationChannelPush(applicationContext!!, channelId, channelName, channelDescription)
         }
     }
 

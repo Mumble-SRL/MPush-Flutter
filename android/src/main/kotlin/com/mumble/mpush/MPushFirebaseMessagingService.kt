@@ -15,6 +15,9 @@ import kotlin.random.Random
 
 class MPushFirebaseMessagingService : FirebaseMessagingService() {
 
+    val ACTION_CREATED_NOTIFICATION = "mpush_create_notification"
+    val ACTION_CLICKED_NOTIFICATION = "mpush_clicked_notification"
+
     override fun onMessageReceived(message: RemoteMessage) {
         val body: String? = message.data["body"]
         var title: String? = message.data["title"]
@@ -52,27 +55,31 @@ class MPushFirebaseMessagingService : FirebaseMessagingService() {
     }
 
     fun sendNotification(map: Map<String, String>, title: String, body: String?, image: String?) {
-        if (MpushPlugin.channelId != null) {
+        val prefs = Utils.getSharedPreferences(applicationContext)
+        val channelId = prefs?.getString("channelId", null)
+        val icon = prefs?.getString("icon", null)
+
+        if (channelId != null) {
 
             val realBody = body ?: "";
 
             val gson = Gson()
 
             var iconResource: Int? = null
-            if (MpushPlugin.icon != null) {
-                iconResource = Utils.getDrawableResourceId(applicationContext, MpushPlugin.icon!!)
+            if (icon != null) {
+                iconResource = Utils.getDrawableResourceId(applicationContext, icon)
             }
 
             val notificationID = Random.nextInt()
             val mNotificationManager = applicationContext.getSystemService(NOTIFICATION_SERVICE) as NotificationManager
 
             val intent = Utils.getLauncherActivity(applicationContext)
-            intent?.action = MpushPlugin.ACTION_CLICKED_NOTIFICATION
+            intent?.action = ACTION_CLICKED_NOTIFICATION
             intent?.flags = Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP
             intent?.putExtra("map", gson.toJson(map))
 
             val contentIntent = PendingIntent.getActivity(applicationContext, notificationID, intent, PendingIntent.FLAG_UPDATE_CURRENT)
-            val notificationBuilder = NotificationCompat.Builder(applicationContext, MpushPlugin.channelId!!)
+            val notificationBuilder = NotificationCompat.Builder(applicationContext, channelId)
 
             notificationBuilder.setContentTitle(title)
                     .setAutoCancel(true)
@@ -96,7 +103,7 @@ class MPushFirebaseMessagingService : FirebaseMessagingService() {
                 notificationBuilder.setStyle(NotificationCompat.BigTextStyle().bigText(realBody))
             }
 
-            val createIntent = Intent(MpushPlugin.ACTION_CREATED_NOTIFICATION)
+            val createIntent = Intent(ACTION_CREATED_NOTIFICATION)
             createIntent.putExtra("map", gson.toJson(map))
             LocalBroadcastManager.getInstance(applicationContext).sendBroadcast(createIntent)
             mNotificationManager.notify(notificationID, notificationBuilder.build())
