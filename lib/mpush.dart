@@ -30,6 +30,7 @@ class MPush {
 
   /// Callback called when a token is retrieved from APNS or FCM
   static Function(String) get onToken => _onToken;
+
 //endregion
 
   static Function(Map<String, dynamic>) _onNotificationArrival;
@@ -37,6 +38,7 @@ class MPush {
 
   static Function(Map<String, dynamic>) get onNotificationArrival =>
       _onNotificationArrival;
+
   static Function(Map<String, dynamic>) get onNotificationTap =>
       _onNotificationTap;
 
@@ -47,6 +49,8 @@ class MPush {
       return result;
     } else if (result is Map<String, dynamic>) {
       return result;
+    } else if (result is Map) {
+      return Map<String, dynamic>.from(result);
     } else if (result is String) {
       return json.decode(result);
     }
@@ -120,6 +124,7 @@ class MPush {
   static Future<void> unregisterFromAllTopics() async {
     return MPushApi.unregisterFromAllTopics();
   }
+
 //endregion
 
   /// Requests the token to APNS & GCM.
@@ -144,6 +149,10 @@ class MPush {
         if (_onNotificationArrival != null) {
           if (methodCall.arguments is Map<String, dynamic>) {
             _onNotificationArrival(methodCall.arguments);
+          } else if (methodCall.arguments is Map) {
+            Map<String, dynamic> map =
+                Map<String, dynamic>.from(methodCall.arguments);
+            _onNotificationArrival(map);
           } else if (methodCall.arguments is String) {
             Map<String, dynamic> map = json.decode(methodCall.arguments);
             _onNotificationArrival(map);
@@ -154,6 +163,10 @@ class MPush {
         if (_onNotificationTap != null) {
           if (methodCall.arguments is Map<String, dynamic>) {
             _onNotificationTap(methodCall.arguments);
+          } else if (methodCall.arguments is Map) {
+            Map<String, dynamic> map =
+                Map<String, dynamic>.from(methodCall.arguments);
+            _onNotificationTap(map);
           } else if (methodCall.arguments is String) {
             Map<String, dynamic> map = json.decode(methodCall.arguments);
             _onNotificationTap(map);
