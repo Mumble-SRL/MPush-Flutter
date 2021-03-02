@@ -164,7 +164,7 @@ class MPush {
           } else if (methodCall.arguments is Map) {
             Map<String, dynamic> map =
                 Map<String, dynamic>.from(methodCall.arguments);
-            _onNotificationArrival(map);
+            _onNotificationTap(map);
           } else if (methodCall.arguments is String) {
             Map<String, dynamic> map = json.decode(methodCall.arguments);
             _onNotificationTap(map);
