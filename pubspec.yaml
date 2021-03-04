@@ -14,8 +14,8 @@ dependencies:
   flutter:
     sdk: flutter
 
-  http: ^0.12.2
-  device_info: ^1.0.0
+  http: ^0.13.0
+  device_info: ^2.0.0
 
 dev_dependencies:
   flutter_test:
