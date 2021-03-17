@@ -1,5 +1,3 @@
-import 'package:flutter/foundation.dart';
-
 /// Notifications settings for the Android part
 class MPAndroidNotificationsSettings {
   /// The channel id
@@ -16,10 +14,10 @@ class MPAndroidNotificationsSettings {
 
   /// Initializes a new android notification settings
   MPAndroidNotificationsSettings({
-    @required this.channelId,
-    @required this.icon,
-    @required this.channelName,
-    @required this.channelDescription,
+    required this.channelId,
+    required this.icon,
+    required this.channelName,
+    required this.channelDescription,
   });
 
   /// Convert this object to a map that can be sent to the method channel

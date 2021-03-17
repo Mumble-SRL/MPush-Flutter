@@ -1,12 +1,10 @@
-import 'package:flutter/foundation.dart';
-
 /// An MPush topic
 class MPTopic {
   /// The code/id of the topic.
   final String code;
 
   /// The title of the topic
-  final String title;
+  final String? title;
 
   /// If this topic represents a single device or a group of devices
   final bool single;
@@ -18,9 +16,9 @@ class MPTopic {
   /// if this is not set it will be equal to code.
   /// @param single If this topic represents a single device or a group of devices, defaults to `false`.
   MPTopic({
-    @required this.code,
+    required this.code,
     this.title,
-    this.single,
+    this.single: false,
   });
 
   /// Converts a topic to map that can be sent to the APIs.
@@ -33,11 +31,8 @@ class MPTopic {
     } else {
       dictionary['title'] = code;
     }
-    if (single != null) {
       dictionary['single'] = single;
-    } else {
-      dictionary['single'] = false;
-    }
+    dictionary['single'] = false;
     return dictionary;
   }
 }

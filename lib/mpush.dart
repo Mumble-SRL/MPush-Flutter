@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'package:flutter/foundation.dart';
 
 import 'package:flutter/services.dart';
 import 'package:mpush/mp_android_notifications_settings.dart';
@@ -17,33 +16,33 @@ class MPush {
   }
 
   /// The api token of the MPush project
-  static get apiToken => MPushApi.apiToken;
+  static String get apiToken => MPushApi.apiToken;
 
 //region onToken
-  static Function(String) _onToken;
+  static Function(String)? _onToken;
 
   /// Callback called when a token is retrieved from APNS or FCM
-  static set onToken(Function(String) value) {
+  static set onToken(Function(String)? value) {
     _initializeMethodCall();
     _onToken = value;
   }
 
   /// Callback called when a token is retrieved from APNS or FCM
-  static Function(String) get onToken => _onToken;
+  static Function(String)? get onToken => _onToken;
 
 //endregion
 
-  static Function(Map<String, dynamic>) _onNotificationArrival;
-  static Function(Map<String, dynamic>) _onNotificationTap;
+  static Function(Map<String, dynamic>)? _onNotificationArrival;
+  static Function(Map<String, dynamic>)? _onNotificationTap;
 
-  static Function(Map<String, dynamic>) get onNotificationArrival =>
+  static Function(Map<String, dynamic>)? get onNotificationArrival =>
       _onNotificationArrival;
 
-  static Function(Map<String, dynamic>) get onNotificationTap =>
+  static Function(Map<String, dynamic>)? get onNotificationTap =>
       _onNotificationTap;
 
   /// The notification that launched the app, if present, otherwise `null`.
-  static Future<Map<String, dynamic>> launchNotification() async {
+  static Future<Map<String, dynamic>?> launchNotification() async {
     dynamic result = await _channel.invokeMethod('launchNotification');
     if (result == null) {
       return result;
@@ -63,9 +62,9 @@ class MPush {
   /// @param onNotificationTap Called when a push notification is tapped.
   /// @param androidNotificationsSettings Settings for the android notification.
   static Future<void> configure({
-    @required Function(Map<String, dynamic>) onNotificationArrival,
-    @required Function(Map<String, dynamic>) onNotificationTap,
-    @required MPAndroidNotificationsSettings androidNotificationsSettings,
+    required Function(Map<String, dynamic>) onNotificationArrival,
+    required Function(Map<String, dynamic>) onNotificationTap,
+    required MPAndroidNotificationsSettings androidNotificationsSettings,
   }) async {
     _initializeMethodCall();
     _onNotificationArrival = onNotificationArrival;
@@ -142,40 +141,60 @@ class MPush {
     switch (methodCall.method) {
       case 'onToken':
         if (methodCall.arguments is String && onToken != null) {
-          onToken(methodCall.arguments);
+          onToken!(methodCall.arguments);
         }
         break;
       case 'pushArrived':
         if (_onNotificationArrival != null) {
-          if (methodCall.arguments is Map<String, dynamic>) {
-            _onNotificationArrival(methodCall.arguments);
-          } else if (methodCall.arguments is Map) {
-            Map<String, dynamic> map =
-                Map<String, dynamic>.from(methodCall.arguments);
-            _onNotificationArrival(map);
-          } else if (methodCall.arguments is String) {
-            Map<String, dynamic> map = json.decode(methodCall.arguments);
-            _onNotificationArrival(map);
-          }
+          _callOnNotificationArrival(
+            methodCall.arguments,
+            _onNotificationArrival!,
+          );
         }
         break;
       case 'pushTapped':
         if (_onNotificationTap != null) {
-          if (methodCall.arguments is Map<String, dynamic>) {
-            _onNotificationTap(methodCall.arguments);
-          } else if (methodCall.arguments is Map) {
-            Map<String, dynamic> map =
-                Map<String, dynamic>.from(methodCall.arguments);
-            _onNotificationTap(map);
-          } else if (methodCall.arguments is String) {
-            Map<String, dynamic> map = json.decode(methodCall.arguments);
-            _onNotificationTap(map);
-          }
+          _callOnNotificationTap(
+            methodCall.arguments,
+            _onNotificationTap!,
+          );
         }
         break;
       default:
         print('${methodCall.method} not implemented');
         return;
+    }
+  }
+
+  /// Parses the `arguments` and calls the `onNotificationArrival` callback.
+  static void _callOnNotificationArrival(
+    dynamic arguments,
+    Function(Map<String, dynamic>) onNotificationArrival,
+  ) {
+    if (arguments is Map<String, dynamic>) {
+      onNotificationArrival(arguments);
+    } else if (arguments is Map) {
+      Map<String, dynamic> map = Map<String, dynamic>.from(arguments);
+      onNotificationArrival(map);
+    } else if (arguments is String) {
+      Map<String, dynamic> map = json.decode(arguments);
+      onNotificationArrival(map);
+    }
+  }
+
+  /// Parses the `arguments` and calls the `onNotificationTap` callback.
+  static void _callOnNotificationTap(
+    dynamic arguments,
+    Function(Map<String, dynamic>) onNotificationTap,
+  ) {
+    if (arguments is Map<String, dynamic>) {
+      onNotificationTap(arguments);
+    } else if (arguments is Map) {
+      Map<String, dynamic> map = Map<String, dynamic>.from(arguments);
+      onNotificationTap(map);
+    } else if (arguments is String) {
+      Map<String, dynamic> map = json.decode(arguments);
+      onNotificationTap(map);
     }
   }
 
