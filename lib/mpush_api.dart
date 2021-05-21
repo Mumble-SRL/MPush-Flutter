@@ -147,20 +147,26 @@ class MPushApi {
   static _checkResponse(String response) {
     final responseJson = json.decode(response);
     Map<String, dynamic> responseDecoded = responseJson as Map<String, dynamic>;
-    int statusCode = responseDecoded["status_code"] as int ?? -1;
+    int statusCode = -1;
+    if (responseDecoded["status_code"] is int) {
+      statusCode = responseDecoded["status_code"];
+    }
     if (statusCode == 0) {
       return;
     } else {
       String errorString = _errorString(responseDecoded);
       throw MPushException(
-        errorString ?? "There was an error, retry later",
+        errorString,
         statusCode: statusCode,
       );
     }
   }
 
   static String _errorString(Map<String, dynamic> responseDecoded) {
-    String message = responseDecoded["message"] as String;
+    String message = 'There was an error, retry later';
+    if (responseDecoded["message"] is String) {
+      message = responseDecoded["message"];
+    }
     if (responseDecoded["errors"] != null) {
       String errorsString = '';
       Map<String, dynamic> errors = responseDecoded["errors"];

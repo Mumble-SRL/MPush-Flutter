@@ -1,3 +1,4 @@
-## 0.0.1+8
+## 1.0.0
 
-* Bugfixes
+* Sound null safety is here.
+* Bugfixes.

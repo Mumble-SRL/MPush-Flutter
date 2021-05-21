@@ -12,7 +12,7 @@ class MPushException implements Exception {
   /// @param statusCode The status code of the exception
   MPushException(
     this.cause, {
-    this.statusCode,
+    required this.statusCode,
   });
 
   @override
