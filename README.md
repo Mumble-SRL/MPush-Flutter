@@ -249,6 +249,6 @@ The topic are instances of the `MPTopic` class which has 3 properties:
 If the application was launched from a notification you can retrieve the data of the notification like this, this will be `null` if the application was launched normally:
 
 ``` dart
-Map<String, dynamic> launchNotification = await MPush.launchNotification();
+Map<String, dynamic>? launchNotification = await MPush.launchNotification();
 print(launchNotification);
 ```
