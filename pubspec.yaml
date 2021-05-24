@@ -1,7 +1,7 @@
 name: mpush
 description: MPush client for Flutter, you can use this plugin to interact with MPush.
 documentation: https://docs.mpush.cloud
-version: 1.0.0
+version: 1.0.1
 authors:
   - Lorenzo Oliveto <lorenzo.oliveto@mumbleideas.it>
   - Enrico Ori <enrico.ori@mumbleideas.it>
