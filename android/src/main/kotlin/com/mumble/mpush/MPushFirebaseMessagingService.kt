@@ -3,6 +3,7 @@ package com.mumble.mpush
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Intent
+import android.net.Uri
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
@@ -41,11 +42,20 @@ class MPushFirebaseMessagingService : FirebaseMessagingService() {
                 val jCustom = JSONObject(custom)
                 if (Utils.isJSONOk(jCustom, "media_url")) {
                     var mediaUrl = jCustom.getString("media_url")
-                    val extension = mediaUrl.substring(mediaUrl.lastIndexOf("."))
-                    if (extension.contains("png") ||
-                            extension.endsWith("jpg") ||
-                            extension.endsWith("jpeg")) {
-                        image = mediaUrl
+
+                    val uri = Uri.parse(mediaUrl)
+                    val lastPath = uri.lastPathSegment
+
+                    if(lastPath != null) {
+                        val extension = lastPath!!.substring(lastPath.lastIndexOf("."))
+                        if(extension != null) {
+                            if (extension.contains("png") ||
+                                extension.contains("jpg") ||
+                                extension.contains("jpeg")
+                            ) {
+                                image = mediaUrl
+                            }
+                        }
                     }
                 }
             }
