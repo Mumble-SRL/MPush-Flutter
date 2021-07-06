@@ -9,6 +9,8 @@ import android.content.SharedPreferences
 import android.content.pm.ApplicationInfo
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.media.AudioAttributes
+import android.net.Uri
 import android.os.Build
 import org.json.JSONObject
 import java.io.InputStream
@@ -22,7 +24,9 @@ class Utils {
         fun getApplicationName(context: Context): String? {
             val applicationInfo: ApplicationInfo = context.applicationInfo
             val stringId = applicationInfo.labelRes
-            return if (stringId == 0) applicationInfo.nonLocalizedLabel.toString() else context.getString(stringId)
+            return if (stringId == 0) applicationInfo.nonLocalizedLabel.toString() else context.getString(
+                stringId
+            )
         }
 
         fun getLauncherActivity(context: Context): Intent? {
@@ -32,6 +36,10 @@ class Utils {
 
         fun getDrawableResourceId(context: Context, name: String): Int {
             return context.resources.getIdentifier(name, "drawable", context.packageName)
+        }
+
+        fun getRawResourceId(context: Context, name: String): Int {
+            return context.resources.getIdentifier(name, "raw", context.packageName)
         }
 
         fun getBitmapfromUrl(imageUrl: String): Bitmap? {
@@ -57,17 +65,52 @@ class Utils {
             return false
         }
 
-        fun createNotificationChannelPush(context: Context, channelId: String, channelName: String, channelDescription: String) {
+        fun createNotificationChannelPush(
+            context: Context,
+            channelId: String,
+            channelName: String,
+            channelDescription: String
+        ) {
             if (Build.VERSION.SDK_INT < 26) {
                 return
             }
-            val mNotificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            val mNotificationManager =
+                context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             val importance = NotificationManager.IMPORTANCE_HIGH
             val mChannel = NotificationChannel(channelId, channelName, importance)
             mChannel.description = channelDescription
             mChannel.enableLights(true)
             mChannel.setShowBadge(true)
             mChannel.enableVibration(true)
+            mChannel.lockscreenVisibility = Notification.VISIBILITY_PUBLIC
+            mNotificationManager.createNotificationChannel(mChannel)
+        }
+
+        fun createTempSoundNotificationChannelPush(
+            context: Context,
+            channelId: String,
+            channelName: String,
+            channelDescription: String,
+            sound: Uri
+        ) {
+            if (Build.VERSION.SDK_INT < 26) {
+                return
+            }
+
+            val audioAttributes: AudioAttributes = AudioAttributes.Builder()
+                .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                .setUsage(AudioAttributes.USAGE_ALARM)
+                .build()
+
+            val mNotificationManager =
+                context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            val importance = NotificationManager.IMPORTANCE_HIGH
+            val mChannel = NotificationChannel(channelId, channelName, importance)
+            mChannel.description = channelDescription
+            mChannel.enableLights(true)
+            mChannel.setShowBadge(true)
+            mChannel.enableVibration(true)
+            mChannel.setSound(sound, audioAttributes)
             mChannel.lockscreenVisibility = Notification.VISIBILITY_PUBLIC
             mNotificationManager.createNotificationChannel(mChannel)
         }
