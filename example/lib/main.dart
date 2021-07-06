@@ -49,7 +49,7 @@ class _MyAppState extends State<MyApp> {
 
     MPush.requestToken();
 
-    Map<String, dynamic>? launchNotification = await MPush.launchNotification();
+    Map<String, dynamic> launchNotification = await MPush.launchNotification();
     print(launchNotification);
   }
 
