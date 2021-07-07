@@ -1,3 +1,3 @@
-## 1.0.3
+## 1.0.4
 
-* Added custom audio capability for Android
+* Fixes to custom audio capability for Android

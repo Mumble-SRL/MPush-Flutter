@@ -12,6 +12,7 @@ import com.google.firebase.messaging.RemoteMessage
 import com.google.gson.Gson
 import org.json.JSONObject
 import kotlin.random.Random
+import java.io.File
 
 class MPushFirebaseMessagingService : FirebaseMessagingService() {
 
@@ -108,18 +109,20 @@ class MPushFirebaseMessagingService : FirebaseMessagingService() {
             var notificationBuilder = NotificationCompat.Builder(applicationContext, channelId)
 
             if(sound != null){
+                val nameWithoutExtension = File(sound).nameWithoutExtension
+
                 val uri =
-                    Uri.parse("android.resource://" + applicationContext.packageName + "/" + Utils.getRawResourceId(applicationContext, sound))
-                if((uri != null) && (Utils.getRawResourceId(applicationContext, sound) != 0)) {
+                    Uri.parse("android.resource://" + applicationContext.packageName + "/" + Utils.getRawResourceId(applicationContext, nameWithoutExtension))
+                if((uri != null) && (Utils.getRawResourceId(applicationContext, nameWithoutExtension) != 0)) {
                     if(Build.VERSION.SDK_INT < 26){
                         notificationBuilder.setSound(uri)
                     }else{
                         Utils.createTempSoundNotificationChannelPush(applicationContext,
-                            channelId + "_" + sound,
-                            channelName + " " + sound,
-                            channelDescription + " " + sound,
+                            channelId + "_" + nameWithoutExtension,
+                            channelName + " " + nameWithoutExtension,
+                            channelDescription + " " + nameWithoutExtension,
                             uri)
-                        notificationBuilder = NotificationCompat.Builder(applicationContext, channelId + "_" + sound)
+                        notificationBuilder = NotificationCompat.Builder(applicationContext, channelId + "_" + nameWithoutExtension)
                     }
                 }
             }
