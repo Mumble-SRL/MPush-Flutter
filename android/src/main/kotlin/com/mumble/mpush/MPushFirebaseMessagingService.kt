@@ -83,6 +83,9 @@ class MPushFirebaseMessagingService : FirebaseMessagingService() {
 
             val realBody = body ?: ""
 
+            val titleWithCustom = Utils.getStringWithCustomReplacements(applicationContext, title)
+            val bodyWithCustom = Utils.getStringWithCustomReplacements(applicationContext, realBody)
+
             val gson = Gson()
 
             var iconResource: Int? = null
@@ -127,9 +130,9 @@ class MPushFirebaseMessagingService : FirebaseMessagingService() {
                 }
             }
 
-            notificationBuilder.setContentTitle(title)
+            notificationBuilder.setContentTitle(titleWithCustom)
                 .setAutoCancel(true)
-                .setContentText(realBody)
+                .setContentText(bodyWithCustom)
                 .setContentIntent(contentIntent)
 
             if (iconResource != null) {
@@ -141,16 +144,16 @@ class MPushFirebaseMessagingService : FirebaseMessagingService() {
                 if (bitmap != null) {
                     notificationBuilder.setStyle(
                         NotificationCompat.BigPictureStyle()
-                            .setSummaryText(realBody)
+                            .setSummaryText(bodyWithCustom)
                             .bigPicture(bitmap)
                     )
                 } else {
                     notificationBuilder.setStyle(
-                        NotificationCompat.BigTextStyle().bigText(realBody)
+                        NotificationCompat.BigTextStyle().bigText(bodyWithCustom)
                     )
                 }
             } else {
-                notificationBuilder.setStyle(NotificationCompat.BigTextStyle().bigText(realBody))
+                notificationBuilder.setStyle(NotificationCompat.BigTextStyle().bigText(bodyWithCustom))
             }
 
             val createIntent = Intent(ACTION_CREATED_NOTIFICATION)

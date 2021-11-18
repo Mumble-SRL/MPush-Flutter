@@ -75,6 +75,42 @@ class MPush {
     );
   }
 
+  /// Adds custom replacements map to the notifications.
+  /// Map keys are the strings to replace with the values
+  /// Saved data persists between app openings
+  static Future<void> addCustomReplacements({
+    required Map<String, String>? customData,
+  }) async {
+    await _channel.invokeMethod(
+      'add_custom_replacements',
+      customData,
+    );
+  }
+
+  /// Removes previously custom replacements map to the notifications.
+  static Future<void> removeCustomReplacements() async {
+    await _channel.invokeMethod(
+      'remove_custom_replacements',
+    );
+  }
+
+  /// Get the current saved custom replacements. It will be null if no map has been saved
+  static Future<Map<String, String>?> getCustomReplacements() async {
+    dynamic result = await _channel.invokeMethod(
+      'get_custom_replacements',
+    );
+
+    if (result == null) {
+      return result;
+    } else if (result is Map<String, String>?) {
+      return result;
+    } else if (result is Map) {
+      return Map<String, String>.from(result);
+    } else if (result is String) {
+      return json.decode(result);
+    }
+  }
+
 //region APIs
 
   /// Register a device token.
@@ -136,7 +172,7 @@ class MPush {
     await _channel.invokeMethod('requestToken');
   }
 
-//region method call handler
+  //region method call handler
   static Future<dynamic> _mPushHandler(MethodCall methodCall) async {
     switch (methodCall.method) {
       case 'onToken':

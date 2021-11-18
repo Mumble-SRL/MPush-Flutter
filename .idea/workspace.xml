@@ -5,9 +5,15 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="24e8f421-6fe3-4b31-a9d5-882abe709f5c" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Dart_Packages.xml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/libraries/Dart_SDK.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Dart_SDK.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/libraries/Flutter_Plugins.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Flutter_Plugins.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/runConfigurations.xml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/android/src/main/kotlin/com/mumble/mpush/MPushFirebaseMessagingService.kt" beforeDir="false" afterPath="$PROJECT_DIR$/android/src/main/kotlin/com/mumble/mpush/MPushFirebaseMessagingService.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/android/src/main/kotlin/com/mumble/mpush/MpushPlugin.kt" beforeDir="false" afterPath="$PROJECT_DIR$/android/src/main/kotlin/com/mumble/mpush/MpushPlugin.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/android/src/main/kotlin/com/mumble/mpush/Utils.kt" beforeDir="false" afterPath="$PROJECT_DIR$/android/src/main/kotlin/com/mumble/mpush/Utils.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/mpush.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/mpush.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/mpush.iml" beforeDir="false" afterPath="$PROJECT_DIR$/mpush.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pubspec.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/pubspec.yaml" afterDir="false" />
     </list>
@@ -16,7 +22,7 @@
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
-  <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[VirtualDevicePath@/Users/lorenzooliveto/.android/avd/Pixel_4_API_29.avd]" />
+  <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[C:\Users\enric\.android\avd\Pixel_3a_API_30_3.avd]" />
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
@@ -40,7 +46,7 @@
     <property name="dart.analysis.tool.window.force.activate" value="false" />
     <property name="dart.analysis.tool.window.visible" value="false" />
     <property name="io.flutter.reload.alreadyRun" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="last_opened_file_path" value="$USER_HOME$/ASFlutterProjects/demo_for_articles_push" />
     <property name="settings.editor.selected.configurable" value="project.propVCSSupport.Mappings" />
     <property name="show.migrate.to.gradle.popup" value="false" />
   </component>
@@ -62,11 +68,5 @@
     <ignored-roots>
       <path value="$PROJECT_DIR$/example/ios/.symlinks/plugins/mpush" />
     </ignored-roots>
-  </component>
-  <component name="WindowStateProjectService">
-    <state x="412" y="174" width="833" height="490" key="find.popup" timestamp="1614677801770">
-      <screen x="0" y="25" width="1440" height="788" />
-    </state>
-    <state x="412" y="174" width="833" height="490" key="find.popup/0.25.1440.788/-296.-1055.1920.1055@0.25.1440.788" timestamp="1614677801770" />
   </component>
 </project>
