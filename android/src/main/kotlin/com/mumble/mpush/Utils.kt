@@ -16,7 +16,9 @@ import org.json.JSONObject
 import java.io.InputStream
 import java.net.HttpURLConnection
 import java.net.URL
-
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
+import java.lang.reflect.Type
 
 class Utils {
     companion object {
@@ -125,6 +127,40 @@ class Utils {
                 return prefs.edit()
             }
             return null
+        }
+
+        fun setCustomReplacements(context: Context, map: Map<String, String>){
+            val gson = Gson()
+            val hashMapString: String = gson.toJson(map)
+            val editor = getSharedPreferencesEditor(context)
+            editor?.putString("mpush_customReplacements", hashMapString)?.apply()
+        }
+
+        fun removeCustomReplacements(context: Context) {
+            val editor = getSharedPreferencesEditor(context)
+            editor?.remove("mpush_customReplacements")?.apply()
+        }
+
+        fun getCustomReplacements(context: Context) : Map<String, String>?{
+            val prefs = getSharedPreferences(context)
+            val jsonString = prefs?.getString("mpush_customReplacements", null)
+            if(jsonString != null){
+                val gson = Gson()
+                val mapType: Type = object : TypeToken<Map<String, String>>() {}.type
+                val map: MutableMap<String, String> = gson.fromJson(jsonString, mapType)
+                return map;
+            }
+
+            return null
+        }
+
+        fun getStringWithCustomReplacements(context: Context, baseText: String): String {
+            var completeText = baseText
+            getCustomReplacements(context)?.forEach { (key, value) ->
+                completeText = completeText.replace(key, value)
+            }
+
+            return completeText
         }
     }
 }

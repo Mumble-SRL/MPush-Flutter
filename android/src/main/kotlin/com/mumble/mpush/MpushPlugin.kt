@@ -95,6 +95,27 @@ class MpushPlugin : FlutterPlugin, BroadcastReceiver(), PluginRegistry.NewIntent
                 getNotificationAppLaunchDetails(result)
             }
 
+            "add_custom_replacements" -> {
+                addCustomInfo(call.arguments as Map<String, String>)
+            }
+
+            "remove_custom_replacements" -> {
+                if(applicationContext != null){
+                    Utils.removeCustomReplacements(applicationContext!!)
+                }else{
+                    result.error("NoContext","No context", null)
+                }
+            }
+
+            "get_custom_replacements" -> {
+                if(applicationContext != null){
+                    val map = Utils.getCustomReplacements(applicationContext!!)
+                    result.success(map)
+                }else{
+                    result.error("NoContext","No context", null)
+                }
+            }
+
             else -> result.notImplemented()
         }
     }
@@ -170,5 +191,13 @@ class MpushPlugin : FlutterPlugin, BroadcastReceiver(), PluginRegistry.NewIntent
         }
 
         result.success(payload)
+    }
+
+    private fun addCustomInfo(map: Map<String, String>){
+        if(applicationContext != null){
+            if(map != null) {
+                Utils.setCustomReplacements(applicationContext!!, map)
+            }
+        }
     }
 }

@@ -4,17 +4,13 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="24e8f421-6fe3-4b31-a9d5-882abe709f5c" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/android/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/android/build.gradle" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/android/src/main/kotlin/com/mumble/mpush/MPushFirebaseMessagingService.kt" beforeDir="false" afterPath="$PROJECT_DIR$/android/src/main/kotlin/com/mumble/mpush/MPushFirebaseMessagingService.kt" afterDir="false" />
-    </list>
+    <list default="true" id="24e8f421-6fe3-4b31-a9d5-882abe709f5c" name="Default Changelist" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
-  <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[SerialNumber@97MAY1187H]" />
+  <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[/Users/lorenzooliveto/.android/avd/Pixel_4_API_29.avd]" />
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
@@ -24,6 +20,14 @@
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitSEFilterConfiguration">
+    <file-type-list>
+      <filtered-out-file-type name="LOCAL_BRANCH" />
+      <filtered-out-file-type name="REMOTE_BRANCH" />
+      <filtered-out-file-type name="TAG" />
+      <filtered-out-file-type name="COMMIT_BY_MESSAGE" />
+    </file-type-list>
   </component>
   <component name="ProjectId" id="1iYMWv2p14kPF9IdFkXwFc8wVlI" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true">
@@ -38,7 +42,7 @@
     <property name="dart.analysis.tool.window.force.activate" value="false" />
     <property name="dart.analysis.tool.window.visible" value="false" />
     <property name="io.flutter.reload.alreadyRun" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="last_opened_file_path" value="$USER_HOME$/ASFlutterProjects/demo_for_articles_push" />
     <property name="settings.editor.selected.configurable" value="project.propVCSSupport.Mappings" />
     <property name="show.migrate.to.gradle.popup" value="false" />
   </component>
@@ -60,11 +64,5 @@
     <ignored-roots>
       <path value="$PROJECT_DIR$/example/ios/.symlinks/plugins/mpush" />
     </ignored-roots>
-  </component>
-  <component name="WindowStateProjectService">
-    <state x="412" y="174" width="833" height="490" key="find.popup" timestamp="1614677801770">
-      <screen x="0" y="25" width="1440" height="788" />
-    </state>
-    <state x="412" y="174" width="833" height="490" key="find.popup/0.25.1440.788/-296.-1055.1920.1055@0.25.1440.788" timestamp="1614677801770" />
   </component>
 </project>
