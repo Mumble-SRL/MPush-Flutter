@@ -6,6 +6,8 @@ public class SwiftMpushPlugin: NSObject, FlutterPlugin {
     private static var staticChannel: FlutterMethodChannel?
     private var launchNotification: [String: Any]?
     
+    public static var appGroupIdentifier: String?
+    
     public static func register(with registrar: FlutterPluginRegistrar) {
         let channel = FlutterMethodChannel(name: "mpush", binaryMessenger: registrar.messenger())
         let instance = SwiftMpushPlugin()
@@ -15,10 +17,19 @@ public class SwiftMpushPlugin: NSObject, FlutterPlugin {
     }
     
     public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
+        if call.method == "configure" {
+            result(nil)
+        }
         if call.method == "requestToken" {
             self.requestToken(result)
         } else if call.method == "launchNotification" {
             result(launchNotification)
+        } else if call.method == "add_custom_replacements" {
+            addCustomReplacements(call, result)
+        } else if (call.method == "remove_custom_replacements") {
+            removeCustomReplacements(result)
+        } else if (call.method == "get_custom_replacements") {
+            getCustomReplacements(result)
         }
     }
     
@@ -85,5 +96,51 @@ public class SwiftMpushPlugin: NSObject, FlutterPlugin {
             channel.invokeMethod("pushTapped", arguments: userInfo)
         }
         completionHandler()
+    }
+    
+    // MARK: Custom replacements
+    
+    private let customDatakey = "com.mumble.mpush.customData"
+    
+    func addCustomReplacements(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) {
+        guard let appGroupIdentifier = SwiftMpushPlugin.appGroupIdentifier else {
+            result(FlutterError(code: "App group identifier not set",
+                                message: "App group identifier not set",
+                                details: nil))
+            return
+        }
+        
+        guard let customData = call.arguments as? [String: String] else {
+            result(FlutterError(code: "Custom data not set",
+                                message: "Custom data not set",
+                                details: nil))
+            return
+        }
+        
+        UserDefaults(suiteName: appGroupIdentifier)?.set(customData, forKey: customDatakey)
+    }
+    
+    func removeCustomReplacements(_ result: @escaping FlutterResult) {
+        guard let appGroupIdentifier = SwiftMpushPlugin.appGroupIdentifier else {
+            result(FlutterError(code: "App group identifier not set",
+                                message: "App group identifier not set",
+                                details: nil))
+            return
+        }
+        UserDefaults(suiteName: appGroupIdentifier)?.removeObject(forKey: customDatakey)
+    }
+    
+    func getCustomReplacements(_ result: @escaping FlutterResult) {
+        guard let appGroupIdentifier = SwiftMpushPlugin.appGroupIdentifier else {
+            result(FlutterError(code: "App group identifier not set",
+                                message: "App group identifier not set",
+                                details: nil))
+            return
+        }
+        if let customData = UserDefaults(suiteName: appGroupIdentifier)?.object(forKey: customDatakey) as? [String: String] {
+            result(customData)
+        } else {
+            result(nil)
+        }
     }
 }

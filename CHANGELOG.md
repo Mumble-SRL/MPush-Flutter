@@ -1,3 +1,3 @@
-## 1.0.4
+## 1.0.5
 
-* Fixes to custom audio capability for Android
+* Added custom replacement dictionary

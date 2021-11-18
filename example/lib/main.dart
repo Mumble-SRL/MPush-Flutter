@@ -60,8 +60,44 @@ class _MyAppState extends State<MyApp> {
         appBar: AppBar(
           title: const Text('MPush Example'),
         ),
-        body: Container(),
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              ElevatedButton(
+                onPressed: () => _setCustomReplacements(),
+                child: Text('Set custom replacements'),
+              ),
+              SizedBox(height: 10),
+              ElevatedButton(
+                onPressed: () => _removeCustomReplacements(),
+                child: Text('Remove custom replacements'),
+              ),
+              SizedBox(height: 10),
+              ElevatedButton(
+                onPressed: () => _printCustomReplacements(),
+                child: Text('Print custom replacements'),
+              ),
+            ],
+          ),
+        ),
       ),
     );
+  }
+
+  Future<void> _setCustomReplacements() async {
+    await MPush.addCustomReplacements(
+      customData: {'Test Key': 'Test Value'},
+    );
+  }
+
+  Future<void> _removeCustomReplacements() async {
+    await MPush.removeCustomReplacements();
+  }
+
+  Future<void> _printCustomReplacements() async {
+    Map<String, String>? customReplacements =
+        await MPush.getCustomReplacements();
+    print(customReplacements);
   }
 }
