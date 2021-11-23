@@ -1,4 +1,4 @@
-## 1.0.5+1
+## 1.0.5+2
 
 * Added custom replacement dictionary
 * Bugfixes
