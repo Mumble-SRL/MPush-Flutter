@@ -32,7 +32,6 @@ class MPTopic {
       dictionary['title'] = code;
     }
     dictionary['single'] = single;
-    dictionary['single'] = false;
     return dictionary;
   }
 }
