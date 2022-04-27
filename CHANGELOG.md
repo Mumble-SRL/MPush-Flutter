@@ -1,3 +1,3 @@
-## 1.0.5
+## 1.0.5+6
 
-* Added custom replacement dictionary
+* Bugfixes Android part

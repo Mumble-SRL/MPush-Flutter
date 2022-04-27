@@ -81,33 +81,45 @@ class MPush {
   static Future<void> addCustomReplacements({
     required Map<String, String>? customData,
   }) async {
-    await _channel.invokeMethod(
-      'add_custom_replacements',
-      customData,
-    );
+    try {
+      await _channel.invokeMethod(
+        'add_custom_replacements',
+        customData,
+      );
+    } catch (e) {
+      throw (e);
+    }
   }
 
   /// Removes previously custom replacements map to the notifications.
   static Future<void> removeCustomReplacements() async {
-    await _channel.invokeMethod(
-      'remove_custom_replacements',
-    );
+    try {
+      await _channel.invokeMethod(
+        'remove_custom_replacements',
+      );
+    } catch (e) {
+      throw (e);
+    }
   }
 
   /// Get the current saved custom replacements. It will be null if no map has been saved
   static Future<Map<String, String>?> getCustomReplacements() async {
-    dynamic result = await _channel.invokeMethod(
-      'get_custom_replacements',
-    );
+    try {
+      dynamic result = await _channel.invokeMethod(
+        'get_custom_replacements',
+      );
 
-    if (result == null) {
-      return result;
-    } else if (result is Map<String, String>?) {
-      return result;
-    } else if (result is Map) {
-      return Map<String, String>.from(result);
-    } else if (result is String) {
-      return json.decode(result);
+      if (result == null) {
+        return result;
+      } else if (result is Map<String, String>?) {
+        return result;
+      } else if (result is Map) {
+        return Map<String, String>.from(result);
+      } else if (result is String) {
+        return json.decode(result);
+      }
+    } catch (e) {
+      throw (e);
     }
   }
 

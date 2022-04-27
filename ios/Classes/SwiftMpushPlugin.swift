@@ -118,6 +118,7 @@ public class SwiftMpushPlugin: NSObject, FlutterPlugin {
         }
         
         UserDefaults(suiteName: appGroupIdentifier)?.set(customData, forKey: customDatakey)
+        result(nil)
     }
     
     func removeCustomReplacements(_ result: @escaping FlutterResult) {
@@ -128,6 +129,7 @@ public class SwiftMpushPlugin: NSObject, FlutterPlugin {
             return
         }
         UserDefaults(suiteName: appGroupIdentifier)?.removeObject(forKey: customDatakey)
+        result(nil)
     }
     
     func getCustomReplacements(_ result: @escaping FlutterResult) {

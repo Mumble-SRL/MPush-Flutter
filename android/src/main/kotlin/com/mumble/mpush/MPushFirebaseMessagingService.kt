@@ -106,7 +106,7 @@ class MPushFirebaseMessagingService : FirebaseMessagingService() {
                 applicationContext,
                 notificationID,
                 intent,
-                PendingIntent.FLAG_UPDATE_CURRENT
+                PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
             )
 
             var notificationBuilder = NotificationCompat.Builder(applicationContext, channelId)

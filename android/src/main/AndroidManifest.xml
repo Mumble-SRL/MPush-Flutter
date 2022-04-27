@@ -2,7 +2,8 @@
   package="com.mumble.mpush">
 
     <application>
-        <service android:name=".MPushFirebaseMessagingService">
+        <service android:name=".MPushFirebaseMessagingService"
+            android:exported="true">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT"/>
             </intent-filter>
