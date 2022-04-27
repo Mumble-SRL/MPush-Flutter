@@ -88,7 +88,7 @@ class MpushPlugin : FlutterPlugin, BroadcastReceiver(), PluginRegistry.NewIntent
             "requestToken" -> requestFirebaseToken(result)
 
             "configure" -> {
-                setConfiguration(call.arguments as Map<String, Any>)
+                setConfiguration(result, call.arguments as Map<String, Any>)
             }
 
             "launchNotification" -> {
@@ -120,7 +120,7 @@ class MpushPlugin : FlutterPlugin, BroadcastReceiver(), PluginRegistry.NewIntent
         }
     }
 
-    private fun setConfiguration(map: Map<String, Any>) {
+    private fun setConfiguration(result: Result, map: Map<String, Any>) {
         if(applicationContext != null){
             val channelId = map["channelId"] as String
             val channelName = map["channelName"] as String
@@ -135,6 +135,7 @@ class MpushPlugin : FlutterPlugin, BroadcastReceiver(), PluginRegistry.NewIntent
             editor?.apply()
 
             Utils.createNotificationChannelPush(applicationContext!!, channelId, channelName, channelDescription)
+            result.success(null)
         }
     }
 
