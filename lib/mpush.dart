@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:mpush/mp_android_notifications_settings.dart';
 import 'package:mpush/mp_topic.dart';
@@ -8,7 +9,7 @@ import 'package:mpush/mpush_api.dart';
 
 /// The MPush plugin, used to interact with MPush
 class MPush {
-  static const MethodChannel _channel = const MethodChannel('mpush');
+  static const MethodChannel _channel = MethodChannel('mpush');
 
   /// The api token of the MPush project
   static set apiToken(String apiToken) {
@@ -87,7 +88,7 @@ class MPush {
         customData,
       );
     } catch (e) {
-      throw (e);
+      rethrow;
     }
   }
 
@@ -98,7 +99,7 @@ class MPush {
         'remove_custom_replacements',
       );
     } catch (e) {
-      throw (e);
+      rethrow;
     }
   }
 
@@ -119,8 +120,9 @@ class MPush {
         return json.decode(result);
       }
     } catch (e) {
-      throw (e);
+      rethrow;
     }
+    return null;
   }
 
 //region APIs
@@ -209,7 +211,7 @@ class MPush {
         }
         break;
       default:
-        print('${methodCall.method} not implemented');
+        debugPrint('${methodCall.method} not implemented');
         return;
     }
   }
