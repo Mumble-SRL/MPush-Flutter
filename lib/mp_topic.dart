@@ -18,7 +18,7 @@ class MPTopic {
   MPTopic({
     required this.code,
     this.title,
-    this.single: false,
+    this.single = false,
   });
 
   /// Converts a topic to map that can be sent to the APIs.

@@ -1,7 +1,8 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:device_info/device_info.dart';
+import 'package:android_id/android_id.dart';
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:http/http.dart' as http;
 
 import 'mp_topic.dart';
@@ -117,7 +118,7 @@ class MPushApi {
     _checkResponse(response.body);
   }
 
-  static Map<String, String> _defaultHeaders({contentTypeJson: false}) {
+  static Map<String, String> _defaultHeaders({contentTypeJson = false}) {
     Map<String, String> headers = {
       'X-MPush-Version': '2',
       'X-MPush-Token': apiToken,
@@ -135,11 +136,12 @@ class MPushApi {
     };
     DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
     if (Platform.isAndroid) {
-      AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
-      defaultParameters['device_id'] = androidInfo.androidId;
+      const androidIdPlugin = AndroidId();
+      String? androidId = await androidIdPlugin.getId();
+      defaultParameters['device_id'] = androidId ?? '';
     } else {
       IosDeviceInfo iosInfo = await deviceInfo.iosInfo;
-      defaultParameters['device_id'] = iosInfo.identifierForVendor;
+      defaultParameters['device_id'] = iosInfo.identifierForVendor ?? '';
     }
     return defaultParameters;
   }

@@ -1,3 +1,3 @@
-## 1.0.5+6
+## 1.0.6
 
-* Bugfixes Android part
+* Updated Flutter version to 3.3.0
