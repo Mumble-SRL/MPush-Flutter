@@ -187,12 +187,15 @@ class MpushPlugin : FlutterPlugin, BroadcastReceiver(), PluginRegistry.NewIntent
 
                 if(checkPermissionNotification == PackageManager.PERMISSION_GRANTED){
                     result.success("granted")
+                    return
                 }else{
                     result.success("denied")
+                    return
                 }
             }
 
             result.success("undefined")
+            return
         }
 
         result.success("granted")
