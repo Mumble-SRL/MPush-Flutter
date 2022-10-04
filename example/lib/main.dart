@@ -15,11 +15,11 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   @override
   void initState() {
-    _setupMPush();
+    _initMPush();
     super.initState();
   }
 
-  _setupMPush() async {
+  _initMPush() async {
     MPush.apiToken = 'YOUR_API_KEY';
     MPush.onToken = (token) async {
       print("Token received $token");
@@ -47,8 +47,6 @@ class _MyAppState extends State<MyApp> {
       ),
     );
 
-    MPush.requestToken();
-
     Map<String, dynamic>? launchNotification = await MPush.launchNotification();
     print(launchNotification);
   }
@@ -64,6 +62,11 @@ class _MyAppState extends State<MyApp> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
+              ElevatedButton(
+                onPressed: () => MPush.requestToken(),
+                child: Text('1- Request token'),
+              ),
+              SizedBox(height: 10),
               ElevatedButton(
                 onPressed: () => _setCustomReplacements(),
                 child: Text('Set custom replacements'),
@@ -96,8 +99,7 @@ class _MyAppState extends State<MyApp> {
   }
 
   Future<void> _printCustomReplacements() async {
-    Map<String, String>? customReplacements =
-        await MPush.getCustomReplacements();
+    Map<String, String>? customReplacements = await MPush.getCustomReplacements();
     print(customReplacements);
   }
 }

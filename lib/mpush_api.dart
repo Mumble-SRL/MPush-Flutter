@@ -7,6 +7,9 @@ import 'package:http/http.dart' as http;
 
 import 'mp_topic.dart';
 import 'mpush_exception.dart';
+import 'mpush_notification_permission.dart';
+
+export 'mpush_notification_permission.dart';
 
 /// The class that handles api calls to MPush
 class MPushApi {
