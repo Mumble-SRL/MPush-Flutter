@@ -64,22 +64,27 @@ class _MyAppState extends State<MyApp> {
             children: [
               ElevatedButton(
                 onPressed: () => MPush.requestToken(),
-                child: Text('1- Request token'),
+                child: Text('Request token'),
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               ElevatedButton(
                 onPressed: () => _setCustomReplacements(),
                 child: Text('Set custom replacements'),
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               ElevatedButton(
                 onPressed: () => _removeCustomReplacements(),
                 child: Text('Remove custom replacements'),
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               ElevatedButton(
                 onPressed: () => _printCustomReplacements(),
                 child: Text('Print custom replacements'),
+              ),
+              const SizedBox(height: 10),
+              ElevatedButton(
+                onPressed: () => _printNotificationPermissionStatus(),
+                child: Text('Print notification permission status'),
               ),
             ],
           ),
@@ -99,7 +104,14 @@ class _MyAppState extends State<MyApp> {
   }
 
   Future<void> _printCustomReplacements() async {
-    Map<String, String>? customReplacements = await MPush.getCustomReplacements();
+    Map<String, String>? customReplacements =
+        await MPush.getCustomReplacements();
     print(customReplacements);
+  }
+
+  Future<void> _printNotificationPermissionStatus() async {
+    MPushNotificationPermission? permissionStatus =
+        await MPush.notificationPermission();
+    print(permissionStatus);
   }
 }
