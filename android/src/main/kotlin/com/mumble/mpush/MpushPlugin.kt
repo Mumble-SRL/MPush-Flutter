@@ -1,12 +1,16 @@
 package com.mumble.mpush
 
+import android.Manifest
 import android.app.Activity
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import android.util.Log
+import android.content.pm.PackageManager
+import android.os.Build
 import androidx.annotation.NonNull
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.messaging.FirebaseMessaging
@@ -22,7 +26,8 @@ import io.flutter.plugin.common.PluginRegistry.Registrar
 
 /** MpushPlugin */
 
-class MpushPlugin : FlutterPlugin, BroadcastReceiver(), PluginRegistry.NewIntentListener, MethodCallHandler, ActivityAware {
+class MpushPlugin : FlutterPlugin, BroadcastReceiver(), PluginRegistry.NewIntentListener,
+    PluginRegistry.RequestPermissionsResultListener, MethodCallHandler, ActivityAware {
 
     private lateinit var channel: MethodChannel
     private var mainActivity: Activity? = null
@@ -32,6 +37,18 @@ class MpushPlugin : FlutterPlugin, BroadcastReceiver(), PluginRegistry.NewIntent
     val ACTION_CREATED_NOTIFICATION = "mpush_create_notification"
     val ACTION_CLICKED_NOTIFICATION = "mpush_clicked_notification"
 
+    private val postNotificationsPermissionCode = 34264
+
+    companion object {
+        @JvmStatic
+        fun registerWith(registrar: Registrar) {
+            val plugin = MpushPlugin()
+            val channel = MethodChannel(registrar.messenger(), "mpush")
+            registrar.addRequestPermissionsResultListener(plugin)
+            channel.setMethodCallHandler(plugin)
+        }
+    }
+
     override fun onAttachedToEngine(@NonNull binding: FlutterPlugin.FlutterPluginBinding) {
         channel = MethodChannel(binding.flutterEngine.dartExecutor, "mpush")
         channel.setMethodCallHandler(this)
@@ -40,7 +57,8 @@ class MpushPlugin : FlutterPlugin, BroadcastReceiver(), PluginRegistry.NewIntent
         val intentFilter = IntentFilter()
         intentFilter.addAction(ACTION_CREATED_NOTIFICATION)
         intentFilter.addAction(ACTION_CLICKED_NOTIFICATION)
-        LocalBroadcastManager.getInstance(binding.applicationContext).registerReceiver(this, intentFilter)
+        LocalBroadcastManager.getInstance(binding.applicationContext)
+            .registerReceiver(this, intentFilter)
         //Log.d("LocalBroadcastManager", "OK")
     }
 
@@ -55,6 +73,7 @@ class MpushPlugin : FlutterPlugin, BroadcastReceiver(), PluginRegistry.NewIntent
         this.applicationContext = binding.activity.applicationContext
         this.launchIntent = mainActivity?.intent
         binding.addOnNewIntentListener(this)
+        binding.addRequestPermissionsResultListener(this)
     }
 
     override fun onDetachedFromActivityForConfigChanges() {
@@ -73,14 +92,26 @@ class MpushPlugin : FlutterPlugin, BroadcastReceiver(), PluginRegistry.NewIntent
         this.applicationContext = null
     }
 
-    companion object {
+    override fun onRequestPermissionsResult(
+        requestCode: Int, permissions: Array<out String>,
+        grantResults: IntArray
+    ): Boolean {
+        when (requestCode) {
+            postNotificationsPermissionCode -> {
+                if (grantResults != null) {
+                    val permissionGranted = grantResults.isNotEmpty() &&
+                            grantResults[0] == PackageManager.PERMISSION_GRANTED
 
-        @JvmStatic
-        fun registerWith(registrar: Registrar) {
-            val plugin = MpushPlugin()
-            val channel = MethodChannel(registrar.messenger(), "mpush")
-            channel.setMethodCallHandler(plugin)
+                    if (permissionGranted) {
+                        callFirebaseForToken()
+                    }
+                }
+
+                return true
+            }
         }
+
+        return false
     }
 
     override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: Result) {
@@ -100,28 +131,30 @@ class MpushPlugin : FlutterPlugin, BroadcastReceiver(), PluginRegistry.NewIntent
             }
 
             "remove_custom_replacements" -> {
-                if(applicationContext != null){
+                if (applicationContext != null) {
                     Utils.removeCustomReplacements(applicationContext!!)
-                }else{
-                    result.error("NoContext","No context", null)
+                } else {
+                    result.error("NoContext", "No context", null)
                 }
             }
 
             "get_custom_replacements" -> {
-                if(applicationContext != null){
+                if (applicationContext != null) {
                     val map = Utils.getCustomReplacements(applicationContext!!)
                     result.success(map)
-                }else{
-                    result.error("NoContext","No context", null)
+                } else {
+                    result.error("NoContext", "No context", null)
                 }
             }
+
+            "get_notification_permission_status" -> getNotificationPermissionStatus(result)
 
             else -> result.notImplemented()
         }
     }
 
     private fun setConfiguration(result: Result, map: Map<String, Any>) {
-        if(applicationContext != null){
+        if (applicationContext != null) {
             val channelId = map["channelId"] as String
             val channelName = map["channelName"] as String
             val channelDescription = map["channelDescription"] as String
@@ -134,12 +167,80 @@ class MpushPlugin : FlutterPlugin, BroadcastReceiver(), PluginRegistry.NewIntent
             editor?.putString("icon", icon)
             editor?.apply()
 
-            Utils.createNotificationChannelPush(applicationContext!!, channelId, channelName, channelDescription)
+            Utils.createNotificationChannelPush(
+                applicationContext!!,
+                channelId,
+                channelName,
+                channelDescription
+            )
             result.success(null)
         }
     }
 
+    private fun getNotificationPermissionStatus(result: Result){
+        if (Build.VERSION.SDK_INT >= 33) {
+            if(applicationContext != null) {
+                val checkPermissionNotification = ContextCompat.checkSelfPermission(
+                    applicationContext!!,
+                    Manifest.permission.POST_NOTIFICATIONS
+                )
+
+                if(checkPermissionNotification == PackageManager.PERMISSION_GRANTED){
+                    result.success("granted")
+                    return
+                }else{
+                    result.success("denied")
+                    return
+                }
+            }
+
+            result.success("undefined")
+            return
+        }
+
+        result.success("granted")
+    }
+
+    private fun isNotificationPermissionEnabled(): Boolean{
+        if (Build.VERSION.SDK_INT >= 33) {
+            if(applicationContext != null) {
+                val checkPermissionNotification = ContextCompat.checkSelfPermission(
+                    applicationContext!!,
+                    Manifest.permission.POST_NOTIFICATIONS
+                )
+
+                return checkPermissionNotification == PackageManager.PERMISSION_GRANTED
+            }
+
+            return false
+        }
+
+        return true
+    }
+
     private fun requestFirebaseToken(result: Result) {
+        if (Build.VERSION.SDK_INT >= 33) {
+            if ((mainActivity != null) && (applicationContext != null)) {
+                if (isNotificationPermissionEnabled()) {
+                    callFirebaseForToken()
+                    result.success(true)
+                } else {
+                    ActivityCompat.requestPermissions(
+                        mainActivity!!,
+                        arrayOf(Manifest.permission.POST_NOTIFICATIONS),
+                        postNotificationsPermissionCode
+                    )
+
+                    result.success(true)
+                }
+            }
+        } else {
+            callFirebaseForToken()
+            result.success(true)
+        }
+    }
+
+    private fun callFirebaseForToken() {
         FirebaseMessaging.getInstance().token.addOnCompleteListener(OnCompleteListener { task ->
             if (!task.isSuccessful) {
                 return@OnCompleteListener
@@ -148,8 +249,6 @@ class MpushPlugin : FlutterPlugin, BroadcastReceiver(), PluginRegistry.NewIntent
             val token = task.result
             channel.invokeMethod("onToken", token)
         })
-
-        result.success(true)
     }
 
     private fun sendNotificationPayloadMessage(intent: Intent): Boolean {
@@ -186,7 +285,10 @@ class MpushPlugin : FlutterPlugin, BroadcastReceiver(), PluginRegistry.NewIntent
 
     private fun getNotificationAppLaunchDetails(result: Result) {
         var payload: String? = null
-        val notificationLaunchedApp = mainActivity != null && ACTION_CLICKED_NOTIFICATION.equals(mainActivity!!.intent.action) && !launchedActivityFromHistory(mainActivity!!.intent)
+        val notificationLaunchedApp =
+            mainActivity != null && ACTION_CLICKED_NOTIFICATION.equals(mainActivity!!.intent.action) && !launchedActivityFromHistory(
+                mainActivity!!.intent
+            )
         if (notificationLaunchedApp) {
             payload = launchIntent?.getStringExtra("map")
         }
@@ -194,9 +296,9 @@ class MpushPlugin : FlutterPlugin, BroadcastReceiver(), PluginRegistry.NewIntent
         result.success(payload)
     }
 
-    private fun addCustomInfo(map: Map<String, String>){
-        if(applicationContext != null){
-            if(map != null) {
+    private fun addCustomInfo(map: Map<String, String>) {
+        if (applicationContext != null) {
+            if (map != null) {
                 Utils.setCustomReplacements(applicationContext!!, map)
             }
         }

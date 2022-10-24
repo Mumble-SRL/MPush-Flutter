@@ -30,6 +30,8 @@ public class SwiftMpushPlugin: NSObject, FlutterPlugin {
             removeCustomReplacements(result)
         } else if (call.method == "get_custom_replacements") {
             getCustomReplacements(result)
+        } else if (call.method == "get_notification_permission_status") {
+            getNotificationPermissionStatus(result)
         }
     }
     
@@ -143,6 +145,25 @@ public class SwiftMpushPlugin: NSObject, FlutterPlugin {
             result(customData)
         } else {
             result(nil)
+        }
+    }
+    
+    func getNotificationPermissionStatus(_ result: @escaping FlutterResult) {
+        UNUserNotificationCenter.current().getNotificationSettings { (settings) in
+            switch settings.authorizationStatus {
+            case .notDetermined:
+                result("undefined")
+            case .denied:
+                result("denied")
+            case .authorized:
+                result("granted")
+            case .provisional:
+                result("provisional")
+            case .ephemeral:
+                result("ephemeral")
+            @unknown default:
+                result("undefined")
+            }
         }
     }
 }

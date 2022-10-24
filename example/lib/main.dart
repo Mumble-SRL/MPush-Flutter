@@ -15,11 +15,11 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   @override
   void initState() {
-    _setupMPush();
+    _initMPush();
     super.initState();
   }
 
-  _setupMPush() async {
+  _initMPush() async {
     MPush.apiToken = 'YOUR_API_KEY';
     MPush.onToken = (token) async {
       print("Token received $token");
@@ -47,8 +47,6 @@ class _MyAppState extends State<MyApp> {
       ),
     );
 
-    MPush.requestToken();
-
     Map<String, dynamic>? launchNotification = await MPush.launchNotification();
     print(launchNotification);
   }
@@ -65,18 +63,28 @@ class _MyAppState extends State<MyApp> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               ElevatedButton(
+                onPressed: () => MPush.requestToken(),
+                child: Text('Request token'),
+              ),
+              const SizedBox(height: 10),
+              ElevatedButton(
                 onPressed: () => _setCustomReplacements(),
                 child: Text('Set custom replacements'),
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               ElevatedButton(
                 onPressed: () => _removeCustomReplacements(),
                 child: Text('Remove custom replacements'),
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               ElevatedButton(
                 onPressed: () => _printCustomReplacements(),
                 child: Text('Print custom replacements'),
+              ),
+              const SizedBox(height: 10),
+              ElevatedButton(
+                onPressed: () => _printNotificationPermissionStatus(),
+                child: Text('Print notification permission status'),
               ),
             ],
           ),
@@ -99,5 +107,11 @@ class _MyAppState extends State<MyApp> {
     Map<String, String>? customReplacements =
         await MPush.getCustomReplacements();
     print(customReplacements);
+  }
+
+  Future<void> _printNotificationPermissionStatus() async {
+    MPushNotificationPermission? permissionStatus =
+        await MPush.notificationPermission();
+    print(permissionStatus);
   }
 }

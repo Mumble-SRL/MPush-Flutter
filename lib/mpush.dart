@@ -7,6 +7,11 @@ import 'package:mpush/mp_android_notifications_settings.dart';
 import 'package:mpush/mp_topic.dart';
 import 'package:mpush/mpush_api.dart';
 
+import 'package:mpush/mpush_notification_permission.dart';
+import 'package:mpush/src/mpush_notification_permission_utility.dart';
+
+export 'package:mpush/mpush_notification_permission.dart';
+
 /// The MPush plugin, used to interact with MPush
 class MPush {
   static const MethodChannel _channel = MethodChannel('mpush');
@@ -125,6 +130,24 @@ class MPush {
     return null;
   }
 
+  /// Returns the current push notification permission status
+  static Future<MPushNotificationPermission> notificationPermission() async {
+    try {
+      dynamic result = await _channel.invokeMethod(
+        'get_notification_permission_status',
+      );
+
+      if (result is String) {
+        return MPushNotificationPermissionUtility.permissionFromString(
+                result) ??
+            MPushNotificationPermission.undefined;
+      } else {
+        return MPushNotificationPermission.undefined;
+      }
+    } catch (e) {
+      rethrow;
+    }
+  }
 //region APIs
 
   /// Register a device token.
