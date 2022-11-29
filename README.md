@@ -19,7 +19,7 @@ You can install the MPush SDK using pub, add this to your `pubspec.yaml` file:
 
 ```yaml
 dependencies:
-  mpush: ^1.0.5+6
+  mpush: ^1.0.7
 ```
 
 And then install packages from the command line with:

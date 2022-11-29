@@ -1,3 +1,3 @@
-## 1.0.6
+## 1.0.8
 
-* Updated Flutter version to 3.3.0
+* Updated dependencies.
