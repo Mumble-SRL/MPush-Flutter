@@ -1,3 +1,3 @@
-## 1.0.7
+## 1.0.8
 
-* Added Android 13 support.
+* Updated dependencies.
