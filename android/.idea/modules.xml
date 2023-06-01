@@ -3,6 +3,9 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/mpush.iml" filepath="$PROJECT_DIR$/.idea/modules/mpush.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/mpush.androidTest.iml" filepath="$PROJECT_DIR$/.idea/modules/mpush.androidTest.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/mpush.main.iml" filepath="$PROJECT_DIR$/.idea/modules/mpush.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/mpush.unitTest.iml" filepath="$PROJECT_DIR$/.idea/modules/mpush.unitTest.iml" />
     </modules>
   </component>
 </project>
