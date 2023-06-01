@@ -10,5 +10,6 @@
                 <action android:name="com.google.firebase.MESSAGING_EVENT"/>
             </intent-filter>
         </service>
+        <receiver android:exported="true" android:name="com.mumble.mpush.MpushPlugin" />
     </application>
 </manifest>
