@@ -1,3 +1,3 @@
-## 1.1.1
+## 1.1.1+1
 
-* Updated dependencies.
+* Fixed bug on Android where `addCustomInfo` caused await to not be completed.
