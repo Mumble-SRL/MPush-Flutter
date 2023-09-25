@@ -1,16 +1,16 @@
 /// An exception in MPush
 class MPushException implements Exception {
   /// The cause of the exception
-  String cause;
+  final String cause;
 
   /// The status code
-  int statusCode;
+  final int statusCode;
 
   /// Initializes a new `MPushException`
   ///
   /// @param cause The cause of the exception
   /// @param statusCode The status code of the exception
-  MPushException(
+  const MPushException(
     this.cause, {
     required this.statusCode,
   });
