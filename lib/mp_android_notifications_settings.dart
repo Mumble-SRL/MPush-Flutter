@@ -1,19 +1,19 @@
 /// Notifications settings for the Android part
 class MPAndroidNotificationsSettings {
   /// The channel id
-  String channelId;
+  final String channelId;
 
   /// The channel name
-  String channelName;
+  final String channelName;
 
   /// The channel description
-  String channelDescription;
+  final String channelDescription;
 
   /// Specifies the default icon for notifications.
-  String icon;
+  final String icon;
 
   /// Initializes a new android notification settings
-  MPAndroidNotificationsSettings({
+  const MPAndroidNotificationsSettings({
     required this.channelId,
     required this.icon,
     required this.channelName,

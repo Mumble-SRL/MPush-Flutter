@@ -8,7 +8,6 @@ import 'package:mpush/mp_topic.dart';
 import 'package:mpush/mpush_api.dart';
 
 import 'package:mpush/mpush_notification_permission.dart';
-import 'package:mpush/src/mpush_notification_permission_utility.dart';
 
 export 'package:mpush/mpush_notification_permission.dart';
 
@@ -138,7 +137,7 @@ class MPush {
       );
 
       if (result is String) {
-        return MPushNotificationPermissionUtility.permissionFromString(
+        return MPushNotificationPermissionUtilities.permissionFromString(
                 result) ??
             MPushNotificationPermission.undefined;
       } else {

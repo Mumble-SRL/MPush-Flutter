@@ -15,7 +15,7 @@ class MPTopic {
   /// @param title The readable title of the topic that will be displayed in the dashboard,
   /// if this is not set it will be equal to code.
   /// @param single If this topic represents a single device or a group of devices, defaults to `false`.
-  MPTopic({
+  const MPTopic({
     required this.code,
     this.title,
     this.single = false,

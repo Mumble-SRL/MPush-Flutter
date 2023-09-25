@@ -127,12 +127,13 @@ class MpushPlugin : FlutterPlugin, BroadcastReceiver(), PluginRegistry.NewIntent
             }
 
             "add_custom_replacements" -> {
-                addCustomInfo(call.arguments as Map<String, String>)
+                addCustomInfo(call.arguments as Map<String, String>, result)
             }
 
             "remove_custom_replacements" -> {
                 if (applicationContext != null) {
                     Utils.removeCustomReplacements(applicationContext!!)
+                    result.success(true)
                 } else {
                     result.error("NoContext", "No context", null)
                 }
@@ -174,21 +175,23 @@ class MpushPlugin : FlutterPlugin, BroadcastReceiver(), PluginRegistry.NewIntent
                 channelDescription
             )
             result.success(null)
+        } else {
+            result.success(false)
         }
     }
 
-    private fun getNotificationPermissionStatus(result: Result){
+    private fun getNotificationPermissionStatus(result: Result) {
         if (Build.VERSION.SDK_INT >= 33) {
-            if(applicationContext != null) {
+            if (applicationContext != null) {
                 val checkPermissionNotification = ContextCompat.checkSelfPermission(
                     applicationContext!!,
                     Manifest.permission.POST_NOTIFICATIONS
                 )
 
-                if(checkPermissionNotification == PackageManager.PERMISSION_GRANTED){
+                if (checkPermissionNotification == PackageManager.PERMISSION_GRANTED) {
                     result.success("granted")
                     return
-                }else{
+                } else {
                     result.success("denied")
                     return
                 }
@@ -201,9 +204,9 @@ class MpushPlugin : FlutterPlugin, BroadcastReceiver(), PluginRegistry.NewIntent
         result.success("granted")
     }
 
-    private fun isNotificationPermissionEnabled(): Boolean{
+    private fun isNotificationPermissionEnabled(): Boolean {
         if (Build.VERSION.SDK_INT >= 33) {
-            if(applicationContext != null) {
+            if (applicationContext != null) {
                 val checkPermissionNotification = ContextCompat.checkSelfPermission(
                     applicationContext!!,
                     Manifest.permission.POST_NOTIFICATIONS
@@ -233,6 +236,8 @@ class MpushPlugin : FlutterPlugin, BroadcastReceiver(), PluginRegistry.NewIntent
 
                     result.success(true)
                 }
+            } else {
+                result.success(false)
             }
         } else {
             callFirebaseForToken()
@@ -296,11 +301,16 @@ class MpushPlugin : FlutterPlugin, BroadcastReceiver(), PluginRegistry.NewIntent
         result.success(payload)
     }
 
-    private fun addCustomInfo(map: Map<String, String>) {
+    private fun addCustomInfo(map: Map<String, String>, result: Result) {
         if (applicationContext != null) {
             if (map != null) {
                 Utils.setCustomReplacements(applicationContext!!, map)
+                result.success(true)
+            } else {
+                result.success(false)
             }
+        } else {
+            result.success(false)
         }
     }
 }

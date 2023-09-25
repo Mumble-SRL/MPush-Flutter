@@ -1,3 +1,4 @@
-## 1.1.1
+## 1.1.1+2
 
-* Updated dependencies.
+* All model classes have now `const`` constructors
+* Removed utility class, included in the `mpush_notification_permission`` file
