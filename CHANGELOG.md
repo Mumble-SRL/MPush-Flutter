@@ -1,4 +1,3 @@
-## 1.1.1+2
+## 1.1.1+3
 
-* All model classes have now `const`` constructors
-* Removed utility class, included in the `mpush_notification_permission`` file
+* Updated Kotlin Version
