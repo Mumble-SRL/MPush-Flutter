@@ -4,12 +4,14 @@ import 'package:mpush/mp_topic.dart';
 import 'package:mpush/mpush.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatefulWidget {
+  const MyApp({Key? key}) : super(key: key);
+
   @override
-  _MyAppState createState() => _MyAppState();
+  State<MyApp> createState() => _MyAppState();
 }
 
 class _MyAppState extends State<MyApp> {
@@ -22,24 +24,24 @@ class _MyAppState extends State<MyApp> {
   _initMPush() async {
     MPush.apiToken = 'YOUR_API_KEY';
     MPush.onToken = (token) async {
-      print("Token received $token");
+      debugPrint("Token received $token");
       await MPush.registerDevice(token).catchError(
-        (error) => print(error),
+        (error) => debugPrint(error),
       );
-      await MPush.registerToTopic(MPTopic(code: 'Topic')).catchError(
-        (error) => print(error),
+      await MPush.registerToTopic(const MPTopic(code: 'Topic')).catchError(
+        (error) => debugPrint(error),
       );
-      print('Registered');
+      debugPrint('Registered');
     };
 
     MPush.configure(
       onNotificationArrival: (notification) {
-        print("Notification arrived: $notification");
+        debugPrint("Notification arrived: $notification");
       },
       onNotificationTap: (notification) {
-        print("Notification tapped: $notification");
+        debugPrint("Notification tapped: $notification");
       },
-      androidNotificationsSettings: MPAndroidNotificationsSettings(
+      androidNotificationsSettings: const MPAndroidNotificationsSettings(
         channelId: 'mpush_example',
         channelName: 'mpush',
         channelDescription: 'mpush',
@@ -48,7 +50,7 @@ class _MyAppState extends State<MyApp> {
     );
 
     Map<String, dynamic>? launchNotification = await MPush.launchNotification();
-    print(launchNotification);
+    debugPrint(launchNotification?.toString());
   }
 
   @override
@@ -64,27 +66,27 @@ class _MyAppState extends State<MyApp> {
             children: [
               ElevatedButton(
                 onPressed: () => MPush.requestToken(),
-                child: Text('Request token'),
+                child: const Text('Request token'),
               ),
               const SizedBox(height: 10),
               ElevatedButton(
                 onPressed: () => _setCustomReplacements(),
-                child: Text('Set custom replacements'),
+                child: const Text('Set custom replacements'),
               ),
               const SizedBox(height: 10),
               ElevatedButton(
                 onPressed: () => _removeCustomReplacements(),
-                child: Text('Remove custom replacements'),
+                child: const Text('Remove custom replacements'),
               ),
               const SizedBox(height: 10),
               ElevatedButton(
                 onPressed: () => _printCustomReplacements(),
-                child: Text('Print custom replacements'),
+                child: const Text('Print custom replacements'),
               ),
               const SizedBox(height: 10),
               ElevatedButton(
                 onPressed: () => _printNotificationPermissionStatus(),
-                child: Text('Print notification permission status'),
+                child: const Text('Print notification permission status'),
               ),
             ],
           ),
@@ -106,12 +108,12 @@ class _MyAppState extends State<MyApp> {
   Future<void> _printCustomReplacements() async {
     Map<String, String>? customReplacements =
         await MPush.getCustomReplacements();
-    print(customReplacements);
+    debugPrint(customReplacements?.toString());
   }
 
   Future<void> _printNotificationPermissionStatus() async {
     MPushNotificationPermission? permissionStatus =
         await MPush.notificationPermission();
-    print(permissionStatus);
+    debugPrint(permissionStatus.toString());
   }
 }
