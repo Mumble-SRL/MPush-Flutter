@@ -22,7 +22,6 @@ import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
 import io.flutter.plugin.common.PluginRegistry
-import io.flutter.plugin.common.PluginRegistry.Registrar
 
 /** MpushPlugin */
 
@@ -38,16 +37,6 @@ class MpushPlugin : FlutterPlugin, BroadcastReceiver(), PluginRegistry.NewIntent
     val ACTION_CLICKED_NOTIFICATION = "mpush_clicked_notification"
 
     private val postNotificationsPermissionCode = 34264
-
-    companion object {
-        @JvmStatic
-        fun registerWith(registrar: Registrar) {
-            val plugin = MpushPlugin()
-            val channel = MethodChannel(registrar.messenger(), "mpush")
-            registrar.addRequestPermissionsResultListener(plugin)
-            channel.setMethodCallHandler(plugin)
-        }
-    }
 
     override fun onAttachedToEngine(@NonNull binding: FlutterPlugin.FlutterPluginBinding) {
         channel = MethodChannel(binding.flutterEngine.dartExecutor, "mpush")
