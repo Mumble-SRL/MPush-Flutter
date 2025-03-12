@@ -1,3 +1,3 @@
-## 1.1.4
+## 1.1.5
 
-* Updated Android embedding
+* Added specification for Android jvm
