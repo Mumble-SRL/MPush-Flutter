@@ -21,7 +21,7 @@ class _MyAppState extends State<MyApp> {
     super.initState();
   }
 
-  _initMPush() async {
+  Future<void> _initMPush() async {
     MPush.apiToken = 'YOUR_API_KEY';
     MPush.onToken = (token) async {
       debugPrint("Token received $token");

@@ -118,7 +118,7 @@ class MPushApi {
     _checkResponse(response.body);
   }
 
-  static Map<String, String> _defaultHeaders({contentTypeJson = false}) {
+  static Map<String, String> _defaultHeaders({bool contentTypeJson = false}) {
     Map<String, String> headers = {
       'X-MPush-Version': '2',
       'X-MPush-Token': apiToken,
@@ -146,7 +146,7 @@ class MPushApi {
     return defaultParameters;
   }
 
-  static _checkResponse(String response) {
+  static void _checkResponse(String response) {
     final responseJson = json.decode(response);
     Map<String, dynamic> responseDecoded = responseJson as Map<String, dynamic>;
     int statusCode = -1;
