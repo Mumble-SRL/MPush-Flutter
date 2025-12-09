@@ -2,7 +2,7 @@ import Flutter
 import UIKit
 import UserNotifications
 
-public class SwiftMpushPlugin: NSObject, FlutterPlugin {
+public class SwiftMpushPlugin: NSObject, FlutterPlugin, FlutterSceneLifeCycleDelegate {
     private static var staticChannel: FlutterMethodChannel?
     private var launchNotification: [String: Any]?
     
@@ -10,9 +10,10 @@ public class SwiftMpushPlugin: NSObject, FlutterPlugin {
     
     public static func register(with registrar: FlutterPluginRegistrar) {
         let channel = FlutterMethodChannel(name: "mpush", binaryMessenger: registrar.messenger())
-        let instance = SwiftMpushPlugin()
+        let instance: SwiftMpushPlugin = SwiftMpushPlugin()
         registrar.addMethodCallDelegate(instance, channel: channel)
         registrar.addApplicationDelegate(instance)
+        registrar.addSceneDelegate(instance)
         staticChannel = channel
     }
     
@@ -63,8 +64,22 @@ public class SwiftMpushPlugin: NSObject, FlutterPlugin {
         }
         return true
     }
+
+    public func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions?) -> Bool {
+        UIApplication.shared.applicationIconBadgeNumber = 0
+        if let notificationResponse = connectionOptions?.notificationResponse,
+           let userInfo = notificationResponse.notification.request.content.userInfo as? [String: AnyHashable] {
+            launchNotification = userInfo
+        }
+        
+        return true
+    }
     
     public func applicationWillEnterForeground(_ application: UIApplication) {
+        UIApplication.shared.applicationIconBadgeNumber = 0
+    }
+
+    public func sceneWillEnterForeground(_ scene: UIScene) {
         UIApplication.shared.applicationIconBadgeNumber = 0
     }
 

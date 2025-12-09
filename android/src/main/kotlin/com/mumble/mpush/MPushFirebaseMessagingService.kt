@@ -19,6 +19,10 @@ class MPushFirebaseMessagingService : FirebaseMessagingService() {
     val ACTION_CREATED_NOTIFICATION = "mpush_create_notification"
     val ACTION_CLICKED_NOTIFICATION = "mpush_clicked_notification"
 
+    override fun onNewToken(token: String) {
+        super.onNewToken(token)
+    }
+
     override fun onMessageReceived(message: RemoteMessage) {
         val body: String? = message.data["body"]
         var title: String? = message.data["title"]

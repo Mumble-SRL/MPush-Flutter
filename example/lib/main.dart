@@ -22,7 +22,8 @@ class _MyAppState extends State<MyApp> {
   }
 
   Future<void> _initMPush() async {
-    MPush.apiToken = 'YOUR_API_KEY';
+    MPush.apiToken = '9YHhlIGODXiizB6bPBreWnAWIGJLa0sqPLSfpDiJ';
+
     MPush.onToken = (token) async {
       debugPrint("Token received $token");
       await MPush.registerDevice(token).catchError(
@@ -50,7 +51,7 @@ class _MyAppState extends State<MyApp> {
     );
 
     Map<String, dynamic>? launchNotification = await MPush.launchNotification();
-    debugPrint(launchNotification?.toString());
+    debugPrint(launchNotification?.toString() ?? '--');
   }
 
   @override
@@ -108,7 +109,7 @@ class _MyAppState extends State<MyApp> {
   Future<void> _printCustomReplacements() async {
     Map<String, String>? customReplacements =
         await MPush.getCustomReplacements();
-    debugPrint(customReplacements?.toString());
+    debugPrint(customReplacements?.toString() ?? '--');
   }
 
   Future<void> _printNotificationPermissionStatus() async {
