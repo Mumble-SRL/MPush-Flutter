@@ -2,6 +2,7 @@ import Flutter
 import UIKit
 import UserNotifications
 
+@objc(MpushPlugin)
 public class SwiftMpushPlugin: NSObject, FlutterPlugin, FlutterSceneLifeCycleDelegate {
     private static var staticChannel: FlutterMethodChannel?
     private var launchNotification: [String: Any]?
