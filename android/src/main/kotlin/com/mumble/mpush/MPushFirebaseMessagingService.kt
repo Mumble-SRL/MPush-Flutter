@@ -5,31 +5,46 @@ import android.app.PendingIntent
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
+import android.util.Log
+import android.content.pm.ApplicationInfo
+import android.content.pm.PackageManager
 import androidx.core.app.NotificationCompat
-import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import com.google.gson.Gson
 import org.json.JSONObject
 import kotlin.random.Random
 import java.io.File
+import java.util.Locale
 
 class MPushFirebaseMessagingService : FirebaseMessagingService() {
 
-    val ACTION_CREATED_NOTIFICATION = "mpush_create_notification"
     val ACTION_CLICKED_NOTIFICATION = "mpush_clicked_notification"
 
+    // Logs only from a debuggable build of the host app: Log.d is not stripped
+    // from release, and these lines describe notification payloads.
+    private fun log(message: String) {
+        val debuggable =
+            applicationContext.applicationInfo.flags and ApplicationInfo.FLAG_DEBUGGABLE != 0
+        if (debuggable) Log.d("MPush", message)
+    }
+
     override fun onNewToken(token: String) {
+        log("🔔 onNewToken called")
         super.onNewToken(token)
     }
 
     override fun onMessageReceived(message: RemoteMessage) {
-        val body: String? = message.data["body"]
+        log("🔔 onMessageReceived called")
+        // Keys only: the payload carries titles, bodies and deep links, and
+        // Android's log is readable by anything with the right permission.
+        log("🔔 Message keys: ${message.data.keys}")
+        
+        var body: String? = message.data["body"]
         var title: String? = message.data["title"]
         var sound: String? = message.data["sound"]
 
-        //Log.d("body", body)
-        //Log.d("title", title)
+        log("🔔 has title: ${title != null}, has body: ${body != null}")
 
         if (title == null) {
             title = Utils.getApplicationName(applicationContext)
@@ -45,6 +60,24 @@ class MPushFirebaseMessagingService : FirebaseMessagingService() {
             //Log.d("custom", custom)
             if (custom != "[]") {
                 val jCustom = JSONObject(custom)
+
+                // App-specific bilingual notifications: override title/body with the
+                // localized payload keys based on the app language (App Group override
+                // key `#canossa_language#`, falling back to the device locale).
+                var isItalian = Locale.getDefault().language == "it"
+                val savedLocale =
+                    Utils.getCustomReplacements(applicationContext)?.get("#canossa_language#")
+                if (savedLocale != null) {
+                    isItalian = savedLocale.lowercase() == "it"
+                }
+                if (isItalian) {
+                    if (Utils.isJSONOk(jCustom, "titleita")) title = jCustom["titleita"] as String?
+                    if (Utils.isJSONOk(jCustom, "textita")) body = jCustom["textita"] as String?
+                } else {
+                    if (Utils.isJSONOk(jCustom, "titleeng")) title = jCustom["titleeng"] as String?
+                    if (Utils.isJSONOk(jCustom, "texteng")) body = jCustom["texteng"] as String?
+                }
+
                 if (Utils.isJSONOk(jCustom, "media_url")) {
                     var mediaUrl = jCustom.getString("media_url")
 
@@ -66,6 +99,9 @@ class MPushFirebaseMessagingService : FirebaseMessagingService() {
             }
         }
 
+        if (title.isNullOrEmpty()) {
+            title = Utils.getApplicationName(applicationContext)
+        }
         sendNotification(message.data, title!!, body, image, sound)
     }
 
@@ -94,7 +130,20 @@ class MPushFirebaseMessagingService : FirebaseMessagingService() {
 
             var iconResource: Int? = null
             if (icon != null) {
-                iconResource = Utils.getDrawableResourceId(applicationContext, icon)
+                iconResource = Utils.getNotificationIconResourceId(applicationContext, icon)
+                if (iconResource == 0) {
+                    log("Notification icon not found: $icon")
+                    iconResource = null
+                }
+            }
+
+            if (iconResource == null) {
+                iconResource = applicationContext.applicationInfo.icon
+                if (iconResource == 0) {
+                    iconResource = applicationContext.packageManager
+                        .getApplicationInfo(applicationContext.packageName, PackageManager.GET_META_DATA)
+                        .icon
+                }
             }
 
             val notificationID = Random.nextInt()
@@ -139,7 +188,7 @@ class MPushFirebaseMessagingService : FirebaseMessagingService() {
                 .setContentText(bodyWithCustom)
                 .setContentIntent(contentIntent)
 
-            if (iconResource != null) {
+            if (iconResource != null && iconResource != 0) {
                 notificationBuilder.setSmallIcon(iconResource)
             }
 
@@ -160,10 +209,12 @@ class MPushFirebaseMessagingService : FirebaseMessagingService() {
                 notificationBuilder.setStyle(NotificationCompat.BigTextStyle().bigText(bodyWithCustom))
             }
 
-            val createIntent = Intent(ACTION_CREATED_NOTIFICATION)
-            createIntent.putExtra("map", gson.toJson(map))
-            LocalBroadcastManager.getInstance(applicationContext).sendBroadcast(createIntent)
-            mNotificationManager.notify(notificationID, notificationBuilder.build())
+            MpushEventBus.postNotificationArrived(gson.toJson(map))
+            try {
+                mNotificationManager.notify(notificationID, notificationBuilder.build())
+            } catch (e: Exception) {
+                Log.e("MPush", "Unable to show notification", e)
+            }
         }
     }
 }

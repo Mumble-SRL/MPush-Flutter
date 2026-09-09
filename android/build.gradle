@@ -2,19 +2,19 @@ group 'com.mumble.mpush'
 version '1.0-SNAPSHOT'
 
 buildscript {
-    ext.kotlin_version = '2.2.21'
+    ext.kotlin_version = '2.3.21'
     repositories {
         google()
         mavenCentral()
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:8.13.1'
+        classpath 'com.android.tools.build:gradle:9.0.1'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }
 }
 
-rootProject.allprojects {
+allprojects {
     repositories {
         google()
         mavenCentral()
@@ -26,17 +26,17 @@ apply plugin: 'kotlin-android'
 
 android {
     namespace 'com.mumble.mpush'
+    compileSdk 36
 
-    compileSdkVersion 36
-
-    java {
-        toolchain {
-            languageVersion = JavaLanguageVersion.of(21)
-        }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
     }
 
     kotlin {
-        jvmToolchain(21)
+        compilerOptions {
+            jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17
+        }
     }
 
     sourceSets {
@@ -47,16 +47,15 @@ android {
         minSdkVersion 24
     }
 
-    lintOptions {
+    lint {
         disable 'InvalidPackage'
     }
 }
 
 dependencies {
+    implementation 'androidx.lifecycle:lifecycle-livedata-core:2.10.0'
     implementation platform('com.google.firebase:firebase-bom:34.6.0')
     implementation 'com.google.firebase:firebase-messaging'
     implementation 'com.google.code.gson:gson:2.13.2'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-    //TODO migrate localbroadcastmanager to LiveData
-    implementation "androidx.localbroadcastmanager:localbroadcastmanager:1.1.0"
 }

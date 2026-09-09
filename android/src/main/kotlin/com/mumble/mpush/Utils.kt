@@ -40,6 +40,21 @@ class Utils {
             return context.resources.getIdentifier(name, "drawable", context.packageName)
         }
 
+        fun getNotificationIconResourceId(context: Context, name: String): Int {
+            val cleanName = name.removePrefix("@")
+            if (cleanName.contains("/")) {
+                val parts = cleanName.split("/", limit = 2)
+                return context.resources.getIdentifier(parts[1], parts[0], context.packageName)
+            }
+
+            val drawableResource = context.resources.getIdentifier(cleanName, "drawable", context.packageName)
+            if (drawableResource != 0) {
+                return drawableResource
+            }
+
+            return context.resources.getIdentifier(cleanName, "mipmap", context.packageName)
+        }
+
         fun getRawResourceId(context: Context, name: String): Int {
             return context.resources.getIdentifier(name, "raw", context.packageName)
         }

@@ -25,7 +25,7 @@ if (flutterVersionName == null) {
 
 android {
     namespace "com.mumble.pushtest"
-    compileSdkVersion 36
+    compileSdk 36
 
     java {
         toolchain {
@@ -41,7 +41,7 @@ android {
         main.java.srcDirs += 'src/main/kotlin'
     }
 
-    lintOptions {
+    lint {
         disable 'InvalidPackage'
     }
 

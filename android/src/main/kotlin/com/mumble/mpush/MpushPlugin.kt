@@ -2,16 +2,14 @@ package com.mumble.mpush
 
 import android.Manifest
 import android.app.Activity
-import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.os.Build
 import androidx.annotation.NonNull
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import androidx.lifecycle.Observer
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.messaging.FirebaseMessaging
 import io.flutter.embedding.engine.plugins.FlutterPlugin
@@ -25,7 +23,7 @@ import io.flutter.plugin.common.PluginRegistry
 
 /** MpushPlugin */
 
-class MpushPlugin : FlutterPlugin, BroadcastReceiver(), PluginRegistry.NewIntentListener,
+class MpushPlugin : FlutterPlugin, PluginRegistry.NewIntentListener,
     PluginRegistry.RequestPermissionsResultListener, MethodCallHandler, ActivityAware {
 
     private lateinit var channel: MethodChannel
@@ -33,8 +31,11 @@ class MpushPlugin : FlutterPlugin, BroadcastReceiver(), PluginRegistry.NewIntent
     private var applicationContext: Context? = null
     private var launchIntent: Intent? = null
 
-    val ACTION_CREATED_NOTIFICATION = "mpush_create_notification"
     val ACTION_CLICKED_NOTIFICATION = "mpush_clicked_notification"
+
+    private val notificationObserver = Observer<String> { map ->
+        channel.invokeMethod("pushArrived", map)
+    }
 
     private val postNotificationsPermissionCode = 34264
 
@@ -42,18 +43,11 @@ class MpushPlugin : FlutterPlugin, BroadcastReceiver(), PluginRegistry.NewIntent
         channel = MethodChannel(binding.flutterEngine.dartExecutor, "mpush")
         channel.setMethodCallHandler(this)
         applicationContext = binding.applicationContext
-
-        val intentFilter = IntentFilter()
-        intentFilter.addAction(ACTION_CREATED_NOTIFICATION)
-        intentFilter.addAction(ACTION_CLICKED_NOTIFICATION)
-        LocalBroadcastManager.getInstance(binding.applicationContext)
-            .registerReceiver(this, intentFilter)
-        //Log.d("LocalBroadcastManager", "OK")
+        MpushEventBus.notificationArrived().observeForever(notificationObserver)
     }
 
     override fun onDetachedFromEngine(@NonNull binding: FlutterPlugin.FlutterPluginBinding) {
-        LocalBroadcastManager.getInstance(binding.applicationContext).unregisterReceiver(this)
-        //Log.d("LocalBroadcastManager", "REMOVED")
+        MpushEventBus.notificationArrived().removeObserver(notificationObserver)
         channel.setMethodCallHandler(null)
     }
 
@@ -252,17 +246,6 @@ class MpushPlugin : FlutterPlugin, BroadcastReceiver(), PluginRegistry.NewIntent
             return true
         }
         return false
-    }
-
-    override fun onReceive(context: Context?, intent: Intent) {
-        //Log.d("onReceive", "DO")
-        val action = intent.action ?: return
-        if (action == ACTION_CREATED_NOTIFICATION) {
-            //Log.d("onReceive", "ACTION_CREATED_NOTIFICATION")
-            val extras = intent.extras ?: return
-            val map = extras.getString("map") ?: return
-            channel.invokeMethod("pushArrived", map)
-        }
     }
 
     override fun onNewIntent(intent: Intent): Boolean {

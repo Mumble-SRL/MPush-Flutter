@@ -71,6 +71,9 @@ class MPush {
     required Function(Map<String, dynamic>) onNotificationTap,
     required MPAndroidNotificationsSettings androidNotificationsSettings,
   }) async {
+    _log('🔔 [MPush Dart] configure() called');
+    _log(
+        '🔔 [MPush Dart] Android settings: channelId=${androidNotificationsSettings.channelId}');
     _initializeMethodCall();
     _onNotificationArrival = onNotificationArrival;
     _onNotificationTap = onNotificationTap;
@@ -78,6 +81,7 @@ class MPush {
       'configure',
       androidNotificationsSettings.toMethodChannelArguments(),
     );
+    _log('🔔 [MPush Dart] configure() completed');
   }
 
   /// Adds custom replacements map to the notifications.
@@ -205,35 +209,55 @@ class MPush {
   ///
   /// @returns A future that completes once the registration is started successfully.
   static Future<void> requestToken() async {
+    _log('🔔 [MPush Dart] requestToken() called');
     await _channel.invokeMethod('requestToken');
+    _log('🔔 [MPush Dart] requestToken() completed');
   }
 
   //region method call handler
   static Future<dynamic> _mPushHandler(MethodCall methodCall) async {
+    _log(
+        '🔔 [MPush Dart] _mPushHandler called with method: ${methodCall.method}');
+    _log('🔔 [MPush Dart] Arguments: ${methodCall.method == 'onToken' ? _redact(methodCall.arguments) : methodCall.arguments}');
+
     switch (methodCall.method) {
       case 'onToken':
+        _log('🔔 [MPush Dart] onToken received');
         if (methodCall.arguments is String && onToken != null) {
+          _log(
+              '🔔 [MPush Dart] Calling onToken callback with: ${methodCall.arguments}');
           onToken!(methodCall.arguments);
+        } else {
+          _log(
+              '🔔 [MPush Dart] onToken callback is null or arguments not String');
         }
         break;
       case 'pushArrived':
+        _log('🔔 [MPush Dart] pushArrived received');
         if (_onNotificationArrival != null) {
+          _log('🔔 [MPush Dart] Calling onNotificationArrival callback');
           _callOnNotificationArrival(
             methodCall.arguments,
             _onNotificationArrival!,
           );
+        } else {
+          _log('🔔 [MPush Dart] _onNotificationArrival is null!');
         }
         break;
       case 'pushTapped':
+        _log('🔔 [MPush Dart] pushTapped received');
         if (_onNotificationTap != null) {
+          _log('🔔 [MPush Dart] Calling onNotificationTap callback');
           _callOnNotificationTap(
             methodCall.arguments,
             _onNotificationTap!,
           );
+        } else {
+          _log('🔔 [MPush Dart] _onNotificationTap is null!');
         }
         break;
       default:
-        debugPrint('${methodCall.method} not implemented');
+        _log('🔔 [MPush Dart] ${methodCall.method} not implemented');
         return;
     }
   }
@@ -280,4 +304,20 @@ class MPush {
       _channel.setMethodCallHandler(_mPushHandler);
     }
   }
+}
+
+/// Logs only where a log belongs.
+///
+/// `debugPrint` survives into release builds, and these lines carry device
+/// tokens and whole request bodies — so they are gated on the debug build, and
+/// the ones that would print a token print only its tail.
+void _log(String message) {
+  if (kDebugMode) debugPrint(message);
+}
+
+/// A token, short enough to tell two apart and too short to use.
+String _redact(Object? token) {
+  String text = token?.toString() ?? '';
+
+  return text.length <= 8 ? '<token>' : '…${text.substring(text.length - 6)}';
 }

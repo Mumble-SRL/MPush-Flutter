@@ -2,21 +2,29 @@ import Flutter
 import UIKit
 import UserNotifications
 
-public class SwiftMpushPlugin: NSObject, FlutterPlugin, FlutterSceneLifeCycleDelegate {
+// NOTE: this class deliberately conforms ONLY to FlutterPlugin. The UIScene
+// lifecycle is handled by the internal `MpushSceneDelegate` below. Conforming
+// the (public, @objc) plugin class to the Swift-only `FlutterSceneLifeCycleDelegate`
+// makes its generated ObjC header (imported by the app's ObjC
+// GeneratedPluginRegistrant) clash across interdependent Swift plugin modules.
+public class MpushPlugin: NSObject, FlutterPlugin {
     private static var staticChannel: FlutterMethodChannel?
-    private var launchNotification: [String: Any]?
-    
+    var launchNotification: [String: Any]?
+    private var sceneDelegate: MpushSceneDelegate?
+
     public static var appGroupIdentifier: String?
-    
+
     public static func register(with registrar: FlutterPluginRegistrar) {
         let channel = FlutterMethodChannel(name: "mpush", binaryMessenger: registrar.messenger())
-        let instance: SwiftMpushPlugin = SwiftMpushPlugin()
+        let instance = MpushPlugin()
         registrar.addMethodCallDelegate(instance, channel: channel)
         registrar.addApplicationDelegate(instance)
-        registrar.addSceneDelegate(instance)
+        let sceneDelegate = MpushSceneDelegate(plugin: instance)
+        instance.sceneDelegate = sceneDelegate
+        registrar.addSceneDelegate(sceneDelegate)
         staticChannel = channel
     }
-    
+
     public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
         if call.method == "configure" {
             result(nil)
@@ -35,28 +43,22 @@ public class SwiftMpushPlugin: NSObject, FlutterPlugin, FlutterSceneLifeCycleDel
             getNotificationPermissionStatus(result)
         }
     }
-    
+
     func requestToken(_ result: @escaping FlutterResult) {
-        if #available(iOS 10.0, *) {
-            UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge]) { (granted, _) in
-                guard granted else { return }
-                UNUserNotificationCenter.current().getNotificationSettings { (settings) in
-                    guard settings.authorizationStatus == .authorized else { return }
-                    DispatchQueue.main.async {
-                        UIApplication.shared.registerForRemoteNotifications()
-                        result(true)
-                    }
+        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge]) { (granted, _) in
+            guard granted else { return }
+            UNUserNotificationCenter.current().getNotificationSettings { (settings) in
+                guard settings.authorizationStatus == .authorized else { return }
+                DispatchQueue.main.async {
+                    UIApplication.shared.registerForRemoteNotifications()
+                    result(true)
                 }
             }
-        } else {
-            result(FlutterError(code: "Unavailable for iOS < 10.0",
-                                message: "Unavailable for iOS < 10.0",
-                                details: nil))
         }
     }
-    
+
     //MARK: - Application delegate
-    
+
     public func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [AnyHashable : Any] = [:]) -> Bool {
         UIApplication.shared.applicationIconBadgeNumber = 0
         if let userInfo = launchOptions[UIApplication.LaunchOptionsKey.remoteNotification] as? [String: AnyHashable] {
@@ -65,81 +67,65 @@ public class SwiftMpushPlugin: NSObject, FlutterPlugin, FlutterSceneLifeCycleDel
         return true
     }
 
-    public func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions?) -> Bool {
-        UIApplication.shared.applicationIconBadgeNumber = 0
-        if let notificationResponse = connectionOptions?.notificationResponse,
-           let userInfo = notificationResponse.notification.request.content.userInfo as? [String: AnyHashable] {
-            launchNotification = userInfo
-        }
-        
-        return true
-    }
-    
     public func applicationWillEnterForeground(_ application: UIApplication) {
         UIApplication.shared.applicationIconBadgeNumber = 0
     }
 
-    public func sceneWillEnterForeground(_ scene: UIScene) {
-        UIApplication.shared.applicationIconBadgeNumber = 0
-    }
-
     public func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
-        if let channel = SwiftMpushPlugin.staticChannel {
+        if let channel = MpushPlugin.staticChannel {
             let deviceTokenParts = deviceToken.map { data -> String in
                 return String(format: "%02.2hhx", data)
             }
-            
+
             let token = deviceTokenParts.joined()
             channel.invokeMethod("onToken", arguments: token, result: {(r:Any?) -> () in })
         }
     }
-    
-    //MARK: - Usern Notification Center Delegate
-    
-    @available(iOS 10.0, *)
+
+    //MARK: - User Notification Center Delegate
+
     public func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
-        if let channel = SwiftMpushPlugin.staticChannel,
+        if let channel = MpushPlugin.staticChannel,
            let userInfo = notification.request.content.userInfo as? [String: AnyHashable] {
             channel.invokeMethod("pushArrived", arguments: userInfo)
         }
         completionHandler(.alert)
     }
 
-    @available(iOS 10.0, *)
     public func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
-        if let channel = SwiftMpushPlugin.staticChannel,
+        if let channel = MpushPlugin.staticChannel,
            let userInfo = response.notification.request.content.userInfo as? [String: AnyHashable] {
             UIApplication.shared.applicationIconBadgeNumber = 0
             channel.invokeMethod("pushTapped", arguments: userInfo)
         }
         completionHandler()
     }
-    
+
     // MARK: Custom replacements
-    
+
     private let customDatakey = "com.mumble.mpush.customData"
-    
+
     func addCustomReplacements(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) {
-        guard let appGroupIdentifier = SwiftMpushPlugin.appGroupIdentifier else {
+        guard let appGroupIdentifier = MpushPlugin.appGroupIdentifier else {
             result(FlutterError(code: "App group identifier not set",
                                 message: "App group identifier not set",
                                 details: nil))
             return
         }
-        
+
         guard let customData = call.arguments as? [String: String] else {
             result(FlutterError(code: "Custom data not set",
                                 message: "Custom data not set",
                                 details: nil))
             return
         }
-        
+
         UserDefaults(suiteName: appGroupIdentifier)?.set(customData, forKey: customDatakey)
         result(nil)
     }
-    
+
     func removeCustomReplacements(_ result: @escaping FlutterResult) {
-        guard let appGroupIdentifier = SwiftMpushPlugin.appGroupIdentifier else {
+        guard let appGroupIdentifier = MpushPlugin.appGroupIdentifier else {
             result(FlutterError(code: "App group identifier not set",
                                 message: "App group identifier not set",
                                 details: nil))
@@ -148,9 +134,9 @@ public class SwiftMpushPlugin: NSObject, FlutterPlugin, FlutterSceneLifeCycleDel
         UserDefaults(suiteName: appGroupIdentifier)?.removeObject(forKey: customDatakey)
         result(nil)
     }
-    
+
     func getCustomReplacements(_ result: @escaping FlutterResult) {
-        guard let appGroupIdentifier = SwiftMpushPlugin.appGroupIdentifier else {
+        guard let appGroupIdentifier = MpushPlugin.appGroupIdentifier else {
             result(FlutterError(code: "App group identifier not set",
                                 message: "App group identifier not set",
                                 details: nil))
@@ -162,7 +148,7 @@ public class SwiftMpushPlugin: NSObject, FlutterPlugin, FlutterSceneLifeCycleDel
             result(nil)
         }
     }
-    
+
     func getNotificationPermissionStatus(_ result: @escaping FlutterResult) {
         UNUserNotificationCenter.current().getNotificationSettings { (settings) in
             switch settings.authorizationStatus {
@@ -180,5 +166,29 @@ public class SwiftMpushPlugin: NSObject, FlutterPlugin, FlutterSceneLifeCycleDel
                 result("undefined")
             }
         }
+    }
+}
+
+/// Handles the UIScene lifecycle for MPush. Kept internal (not the registered
+/// plugin class) so its `FlutterSceneLifeCycleDelegate` conformance is never
+/// exposed through the app's ObjC GeneratedPluginRegistrant.
+final class MpushSceneDelegate: NSObject, FlutterSceneLifeCycleDelegate {
+    private weak var plugin: MpushPlugin?
+
+    init(plugin: MpushPlugin) {
+        self.plugin = plugin
+    }
+
+    func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions?) -> Bool {
+        UIApplication.shared.applicationIconBadgeNumber = 0
+        if let notificationResponse = connectionOptions?.notificationResponse,
+           let userInfo = notificationResponse.notification.request.content.userInfo as? [String: AnyHashable] {
+            plugin?.launchNotification = userInfo
+        }
+        return true
+    }
+
+    func sceneWillEnterForeground(_ scene: UIScene) {
+        UIApplication.shared.applicationIconBadgeNumber = 0
     }
 }
