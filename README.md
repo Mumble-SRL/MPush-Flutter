@@ -84,18 +84,28 @@ The app delegate should look like this.
 import UIKit
 import Flutter
 
-@UIApplicationMain
-@objc class AppDelegate: FlutterAppDelegate {
+@main
+@objc class AppDelegate: FlutterAppDelegate, FlutterImplicitEngineDelegate {
   override func application(
     _ application: UIApplication,
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
   ) -> Bool {
     UNUserNotificationCenter.current().delegate = self
-    GeneratedPluginRegistrant.register(with: self)
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
+  }
+
+  func didInitializeImplicitFlutterEngine(_ engineBridge: FlutterImplicitEngineBridge) {
+    GeneratedPluginRegistrant.register(with: engineBridge.pluginRegistry)
   }
 }
 ```
+
+### Dependency manager
+
+The iOS plugin ships both a Swift Package (`ios/mpush/Package.swift`) and a
+podspec (`ios/mpush.podspec`), so it works with Swift Package Manager and with
+CocoaPods. Nothing has to be configured: Flutter picks Swift Package Manager
+when it is enabled for your app, and falls back to CocoaPods otherwise.
 
 ### Rich Notifications
 
@@ -252,3 +262,29 @@ If the application was launched from a notification you can retrieve the data of
 Map<String, dynamic>? launchNotification = await MPush.launchNotification();
 print(launchNotification);
 ```
+
+# Contributing
+
+## Running the example with Swift Package Manager
+
+Swift Package Manager derives a package's identity from the directory name of
+the package it resolves. For the example app the plugin is a `path:`
+dependency, so the checkout directory itself becomes that identity: cloning
+into `MPush-Flutter` makes Xcode fail with
+
+```
+unable to override package 'mpush' because its identity 'mpush-flutter'
+doesn't match override's identity (directory name) 'mpush'
+```
+
+Clone into a directory named after the plugin instead:
+
+```bash
+git clone https://github.com/Mumble-SRL/MPush-Flutter.git mpush
+cd mpush/example
+flutter build ios --no-codesign
+```
+
+This affects the example app only. Apps that depend on the published package
+resolve it from the pub cache (`mpush-<version>`), which Swift Package Manager
+handles correctly.

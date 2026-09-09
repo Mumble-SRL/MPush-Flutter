@@ -2,7 +2,7 @@ PODS:
   - device_info_plus (0.0.1):
     - Flutter
   - Flutter (1.0.0)
-  - mpush (0.0.1):
+  - mpush (1.2.0):
     - Flutter
 
 DEPENDENCIES:
@@ -20,9 +20,9 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   device_info_plus: 21fcca2080fbcd348be798aa36c3e5ed849eefbe
-  Flutter: cabc95a1d2626b1b06e7179b784ebcf0c0cde467
-  mpush: e2d30c8e4fa99b1e0fda4839b3b6fadcf5095561
+  Flutter: 71a624a5bc0c04062bf19101d501e466baf2fb47
+  mpush: fab67f092c2ec8731200d9df5085d3cfdc0576dd
 
-PODFILE CHECKSUM: cc1f88378b4bfcf93a6ce00d2c587857c6008d3b
+PODFILE CHECKSUM: 57c8aed26fba39d3ec9424816221f294a07c58eb
 
-COCOAPODS: 1.16.2
+COCOAPODS: 1.17.0

@@ -8,3 +8,6 @@ build/
 
 # FVM Version Cache
 .fvm/
+
+# CodeGraph index
+.codegraph/

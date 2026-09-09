@@ -4,7 +4,7 @@
 #
 Pod::Spec.new do |s|
   s.name             = 'mpush'
-  s.version          = '1.1.8'
+  s.version          = '1.2.0'
   s.summary          = 'MPush client for Flutter, you can use this plugin to interact with MPush.'
   s.description      = <<-DESC
 MPush client for Flutter, you can use this plugin to interact with MPush.
