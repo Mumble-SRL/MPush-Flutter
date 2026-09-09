@@ -1,4 +1,4 @@
-## 1.2.0
+## 2.2.0
 
 * Added Swift Package Manager support for iOS, alongside the existing CocoaPods support
 * Adopted the iOS UIScene lifecycle

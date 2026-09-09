@@ -1,6 +1,6 @@
 name: mpush
 description: MPush client for Flutter, you can use this plugin to interact with MPush.
-version: 1.2.0
+version: 2.2.0
 homepage: https://github.com/Mumble-SRL/MPush-Flutter
 
 environment:
