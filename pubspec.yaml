@@ -26,4 +26,4 @@ flutter:
         package: com.mumble.mpush
         pluginClass: MpushPlugin
       ios:
-        pluginClass: MpushPlugin
+        pluginClass: SwiftMpushPlugin

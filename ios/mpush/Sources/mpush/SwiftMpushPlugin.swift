@@ -7,7 +7,7 @@ import UserNotifications
 // the (public, @objc) plugin class to the Swift-only `FlutterSceneLifeCycleDelegate`
 // makes its generated ObjC header (imported by the app's ObjC
 // GeneratedPluginRegistrant) clash across interdependent Swift plugin modules.
-public class MpushPlugin: NSObject, FlutterPlugin {
+public class SwiftMpushPlugin: NSObject, FlutterPlugin {
     private static var staticChannel: FlutterMethodChannel?
     var launchNotification: [String: Any]?
     private var sceneDelegate: MpushSceneDelegate?
@@ -16,7 +16,7 @@ public class MpushPlugin: NSObject, FlutterPlugin {
 
     public static func register(with registrar: FlutterPluginRegistrar) {
         let channel = FlutterMethodChannel(name: "mpush", binaryMessenger: registrar.messenger())
-        let instance = MpushPlugin()
+        let instance = SwiftMpushPlugin()
         registrar.addMethodCallDelegate(instance, channel: channel)
         registrar.addApplicationDelegate(instance)
         let sceneDelegate = MpushSceneDelegate(plugin: instance)
@@ -72,7 +72,7 @@ public class MpushPlugin: NSObject, FlutterPlugin {
     }
 
     public func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
-        if let channel = MpushPlugin.staticChannel {
+        if let channel = SwiftMpushPlugin.staticChannel {
             let deviceTokenParts = deviceToken.map { data -> String in
                 return String(format: "%02.2hhx", data)
             }
@@ -85,7 +85,7 @@ public class MpushPlugin: NSObject, FlutterPlugin {
     //MARK: - User Notification Center Delegate
 
     public func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
-        if let channel = MpushPlugin.staticChannel,
+        if let channel = SwiftMpushPlugin.staticChannel,
            let userInfo = notification.request.content.userInfo as? [String: AnyHashable] {
             channel.invokeMethod("pushArrived", arguments: userInfo)
         }
@@ -93,7 +93,7 @@ public class MpushPlugin: NSObject, FlutterPlugin {
     }
 
     public func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
-        if let channel = MpushPlugin.staticChannel,
+        if let channel = SwiftMpushPlugin.staticChannel,
            let userInfo = response.notification.request.content.userInfo as? [String: AnyHashable] {
             UIApplication.shared.applicationIconBadgeNumber = 0
             channel.invokeMethod("pushTapped", arguments: userInfo)
@@ -106,7 +106,7 @@ public class MpushPlugin: NSObject, FlutterPlugin {
     private let customDatakey = "com.mumble.mpush.customData"
 
     func addCustomReplacements(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) {
-        guard let appGroupIdentifier = MpushPlugin.appGroupIdentifier else {
+        guard let appGroupIdentifier = SwiftMpushPlugin.appGroupIdentifier else {
             result(FlutterError(code: "App group identifier not set",
                                 message: "App group identifier not set",
                                 details: nil))
@@ -125,7 +125,7 @@ public class MpushPlugin: NSObject, FlutterPlugin {
     }
 
     func removeCustomReplacements(_ result: @escaping FlutterResult) {
-        guard let appGroupIdentifier = MpushPlugin.appGroupIdentifier else {
+        guard let appGroupIdentifier = SwiftMpushPlugin.appGroupIdentifier else {
             result(FlutterError(code: "App group identifier not set",
                                 message: "App group identifier not set",
                                 details: nil))
@@ -136,7 +136,7 @@ public class MpushPlugin: NSObject, FlutterPlugin {
     }
 
     func getCustomReplacements(_ result: @escaping FlutterResult) {
-        guard let appGroupIdentifier = MpushPlugin.appGroupIdentifier else {
+        guard let appGroupIdentifier = SwiftMpushPlugin.appGroupIdentifier else {
             result(FlutterError(code: "App group identifier not set",
                                 message: "App group identifier not set",
                                 details: nil))
@@ -173,9 +173,9 @@ public class MpushPlugin: NSObject, FlutterPlugin {
 /// plugin class) so its `FlutterSceneLifeCycleDelegate` conformance is never
 /// exposed through the app's ObjC GeneratedPluginRegistrant.
 final class MpushSceneDelegate: NSObject, FlutterSceneLifeCycleDelegate {
-    private weak var plugin: MpushPlugin?
+    private weak var plugin: SwiftMpushPlugin?
 
-    init(plugin: MpushPlugin) {
+    init(plugin: SwiftMpushPlugin) {
         self.plugin = plugin
     }
 
