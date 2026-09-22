@@ -3,11 +3,11 @@ import 'dart:io';
 
 import 'package:android_id/android_id.dart';
 import 'package:device_info_plus/device_info_plus.dart';
-import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 
 import 'mp_topic.dart';
 import 'mpush_exception.dart';
+import 'src/mpush_log.dart';
 
 /// The class that handles api calls to MPush
 class MPushApi {
@@ -22,7 +22,9 @@ class MPushApi {
   /// @param token: the token for this device, typically coming from the onToken` callback`.
   /// @returns A future that completes once the registration is successful.
   static Future<void> registerDevice(String token) async {
-    _log('🔔 [MPush API] registerDevice called with token ${_redact(token)}');
+    mpushLog(
+      '🔔 [MPush API] registerDevice called with token ${mpushRedact(token)}',
+    );
     Map<String, String> apiParameters = {};
     apiParameters.addAll(await _defaultParameters());
     apiParameters['token'] = token;
@@ -30,12 +32,12 @@ class MPushApi {
     String apiName = 'api/tokens';
 
     var requestBody = json.encode(apiParameters);
-    _log('🔔 [MPush API] registerDevice posting for device');
+    mpushLog('🔔 [MPush API] registerDevice posting for device');
 
     Map<String, String> headers = _defaultHeaders(contentTypeJson: true);
 
     var uri = Uri.https(_endpoint, apiName);
-    _log('🔔 [MPush API] registerDevice URL: $uri');
+    mpushLog('🔔 [MPush API] registerDevice URL: $uri');
 
     http.Response response = await http.post(
       uri,
@@ -43,8 +45,9 @@ class MPushApi {
       body: requestBody,
     );
 
-    _log(
-        '🔔 [MPush API] registerDevice response: ${response.statusCode} - ${response.body}');
+    mpushLog(
+      '🔔 [MPush API] registerDevice response: ${response.statusCode} - ${response.body}',
+    );
     _checkResponse(response.body);
   }
 
@@ -53,31 +56,34 @@ class MPushApi {
   /// @param topics The array of topics you will register to.
   /// @returns A future that completes once the registration is successful.
   static Future<void> registerToTopics(List<MPTopic> topics) async {
-    _log(
-        '🔔 [MPush API] registerToTopics called with topics: ${topics.map((t) => t.code).toList()}');
+    mpushLog(
+      '🔔 [MPush API] registerToTopics called with topics: ${topics.map((t) => t.code).toList()}',
+    );
     Map<String, String> apiParameters = {};
     apiParameters.addAll(await _defaultParameters());
-    List<Map<String, dynamic>> topicsDictionaries =
-        topics.map((t) => t.toApiDictionary()).toList();
+    List<Map<String, dynamic>> topicsDictionaries = topics
+        .map((t) => t.toApiDictionary())
+        .toList();
     apiParameters['topics'] = json.encode(topicsDictionaries);
 
     String apiName = 'api/register';
 
     var requestBody = json.encode(apiParameters);
-    _log('🔔 [MPush API] registerToTopics posting ${topics.length} topics');
+    mpushLog('🔔 [MPush API] registerToTopics posting ${topics.length} topics');
 
     Map<String, String> headers = _defaultHeaders(contentTypeJson: true);
 
     var uri = Uri.https(_endpoint, apiName);
-    _log('🔔 [MPush API] registerToTopics URL: $uri');
+    mpushLog('🔔 [MPush API] registerToTopics URL: $uri');
 
     http.Response response = await http.post(
       uri,
       headers: headers,
       body: requestBody,
     );
-    _log(
-        '🔔 [MPush API] registerToTopics response: ${response.statusCode} - ${response.body}');
+    mpushLog(
+      '🔔 [MPush API] registerToTopics response: ${response.statusCode} - ${response.body}',
+    );
     _checkResponse(response.body);
   }
 
@@ -169,10 +175,7 @@ class MPushApi {
       return;
     } else {
       String errorString = _errorString(responseDecoded);
-      throw MPushException(
-        errorString,
-        statusCode: statusCode,
-      );
+      throw MPushException(errorString, statusCode: statusCode);
     }
   }
 
@@ -202,20 +205,4 @@ class MPushApi {
     }
     return message;
   }
-}
-
-/// Logs only where a log belongs.
-///
-/// `debugPrint` survives into release builds, and these lines carry device
-/// tokens and whole request bodies — so they are gated on the debug build, and
-/// the ones that would print a token print only its tail.
-void _log(String message) {
-  if (kDebugMode) debugPrint(message);
-}
-
-/// A token, short enough to tell two apart and too short to use.
-String _redact(Object? token) {
-  String text = token?.toString() ?? '';
-
-  return text.length <= 8 ? '<token>' : '…${text.substring(text.length - 6)}';
 }
